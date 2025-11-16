@@ -1,5 +1,7 @@
+import { useEffect, useRef } from 'react'
 import { Box, Flex, Heading, HStack, Input, Text } from '@chakra-ui/react'
 import { Button } from '../atoms/Button'
+import gsap from 'gsap'
 
 export const Header = ({
   isAuthenticated,
@@ -17,6 +19,22 @@ export const Header = ({
   onCategoryChange,
   cartContent,
 }) => {
+  const cartRef = useRef(null)
+  const backdropRef = useRef(null)
+
+  useEffect(() => {
+    if (isCartOpen) {
+      gsap.fromTo(cartRef.current, 
+        { x: 400, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }
+      )
+      gsap.fromTo(backdropRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3 }
+      )
+    }
+  }, [isCartOpen])
+
   return (
     <>
       <Box bg="gray.900" color="white">
@@ -133,6 +151,7 @@ export const Header = ({
 
       {isCartOpen && (
         <Box
+          ref={cartRef}
           position="fixed"
           top="0"
           right="0"
@@ -154,6 +173,7 @@ export const Header = ({
       )}
       {isCartOpen && (
         <Box
+          ref={backdropRef}
           position="fixed"
           top="0"
           left="0"
