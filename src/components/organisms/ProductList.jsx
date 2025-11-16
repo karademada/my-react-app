@@ -1,7 +1,7 @@
 import { Grid, Heading, Box } from '@chakra-ui/react'
 import { ProductCard } from '../molecules/ProductCard'
 
-export const ProductList = ({ products, onAddToCart }) => {
+export const ProductList = ({ products, onAddToCart, onProductClick }) => {
   return (
     <Box>
       <Heading size="lg" mb={4}>Products</Heading>
@@ -11,6 +11,7 @@ export const ProductList = ({ products, onAddToCart }) => {
             key={product.id}
             product={product}
             onAddToCart={onAddToCart}
+            onProductClick={onProductClick}
           />
         ))}
       </Grid>

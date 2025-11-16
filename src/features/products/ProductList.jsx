@@ -3,7 +3,7 @@ import { selectFilteredProducts } from './productsSelectors'
 import { addToCart } from '../cart/cartSlice'
 import { ProductList as ProductListUI } from '../../components/organisms/ProductList'
 
-export default function ProductList() {
+export default function ProductList({ onProductClick }) {
   const products = useSelector(selectFilteredProducts)
   const dispatch = useDispatch()
 
@@ -11,5 +11,5 @@ export default function ProductList() {
     dispatch(addToCart({ product, quantity: 1 }))
   }
 
-  return <ProductListUI products={products} onAddToCart={handleAddToCart} />
+  return <ProductListUI products={products} onAddToCart={handleAddToCart} onProductClick={onProductClick} />
 }

@@ -1,7 +1,7 @@
 import { Box, Image, Stack, Heading, Text } from '@chakra-ui/react'
 import { Button } from '../atoms/Button'
 
-export const ProductCard = ({ product, onAddToCart, disabled }) => {
+export const ProductCard = ({ product, onAddToCart, onProductClick, disabled }) => {
   return (
     <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
       <Image
@@ -10,9 +10,11 @@ export const ProductCard = ({ product, onAddToCart, disabled }) => {
         width="100%"
         height="200px"
         objectFit="cover"
+        cursor="pointer"
+        onClick={() => onProductClick?.(product.id)}
       />
       <Stack gap={3} p={4}>
-        <Heading size="md">{product.name}</Heading>
+        <Heading size="md" cursor="pointer" onClick={() => onProductClick?.(product.id)}>{product.name}</Heading>
         <Text fontSize="2xl" fontWeight="bold" color="blue.600">
           ${product.price}
         </Text>
