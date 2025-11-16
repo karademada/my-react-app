@@ -2,6 +2,9 @@ import { useEffect, useRef } from 'react'
 import { Box, Flex, Heading, HStack, Input, Text } from '@chakra-ui/react'
 import { Button } from '../atoms/Button'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export const Header = ({
   isAuthenticated,
@@ -21,6 +24,9 @@ export const Header = ({
 }) => {
   const cartRef = useRef(null)
   const backdropRef = useRef(null)
+  const headerRef = useRef(null)
+  const topBarRef = useRef(null)
+  const categoryNavRef = useRef(null)
 
   useEffect(() => {
     if (isCartOpen) {
@@ -35,11 +41,33 @@ export const Header = ({
     }
   }, [isCartOpen])
 
+  useEffect(() => {
+    gsap.fromTo(topBarRef.current,
+      { y: -50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' }
+    )
+    gsap.fromTo(categoryNavRef.current,
+      { y: -30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, delay: 0.2, ease: 'power2.out' }
+    )
+
+    gsap.to(headerRef.current, {
+      scrollTrigger: {
+        trigger: document.body,
+        start: 'top top',
+        end: '+=300',
+        scrub: 1,
+      },
+      y: -50,
+      opacity: 0.8,
+    })
+  }, [])
+
   return (
     <>
-      <Box bg="gray.900" color="white">
+      <Box ref={headerRef} bg="gray.900" color="white">
         {/* Top bar */}
-        <Box px={8} py={3}>
+        <Box ref={topBarRef} px={8} py={3}>
           <Flex justify="space-between" align="center" gap={4}>
             <Heading size="md" minW="150px">Redux Shop</Heading>
             
@@ -128,7 +156,7 @@ export const Header = ({
         </Box>
 
         {/* Category nav */}
-        <Box bg="gray.800" px={8} py={2}>
+        <Box ref={categoryNavRef} bg="gray.800" px={8} py={2}>
           <HStack gap={4} fontSize="sm">
             <Text cursor="pointer" _hover={{ textDecoration: 'underline' }} onClick={() => onCategoryChange(null)}>All</Text>
             {categories.map(cat => (
