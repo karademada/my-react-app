@@ -12,11 +12,11 @@ export const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
           objectFit="cover"
           borderRadius="md"
         />
-        <Box flex={1}>
-          <Heading size="sm">{item.name}</Heading>
+        <Box flex={1} minW="0">
+          <Heading size="sm" noOfLines={2} wordBreak="break-word">{item.name}</Heading>
           <Text color="gray.600">${item.price}</Text>
         </Box>
-        <HStack gap={2}>
+        <Flex direction="column" gap={2} align="flex-end" minW="120px">
           <Input
             type="number"
             value={item.quantity}
@@ -24,10 +24,10 @@ export const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
             width="70px"
             min="0"
           />
-          <Button variant="outline" colorScheme="red" onClick={() => onRemove(item.id)}>
+          <Button variant="outline" colorScheme="red" onClick={() => onRemove(item.id)} size="sm" width="100%">
             Remove
           </Button>
-        </HStack>
+        </Flex>
       </Flex>
     </Box>
   )

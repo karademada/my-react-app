@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, HStack, Input, Text, Badge, Drawer, Select, InputGroup } from '@chakra-ui/react'
+import { Box, Flex, Heading, HStack, Input, Text } from '@chakra-ui/react'
 import { Button } from '../atoms/Button'
 
 export const Header = ({
@@ -27,36 +27,39 @@ export const Header = ({
             
             {/* Search bar */}
             <Flex flex={1} maxW="800px" gap={0}>
-              <Select
+              <Box
+                as="select"
                 value={selectedCategory || 'all'}
                 onChange={(e) => onCategoryChange(e.target.value === 'all' ? null : e.target.value)}
                 bg="gray.100"
                 color="black"
                 borderRightRadius="0"
                 width="150px"
+                px={3}
+                py={2}
+                border="none"
               >
                 <option value="all">All</option>
                 {categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
-              </Select>
-              <InputGroup flex={1}>
-                <Input
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  bg="white"
-                  color="black"
-                  borderRadius="0"
-                />
-                <Button
-                  colorScheme="orange"
-                  borderLeftRadius="0"
-                  px={6}
-                >
-                  🔍
-                </Button>
-              </InputGroup>
+              </Box>
+              <Input
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                bg="white"
+                color="black"
+                borderRadius="0"
+                flex={1}
+              />
+              <Button
+                colorScheme="orange"
+                borderLeftRadius="0"
+                px={6}
+              >
+                🔍
+              </Button>
             </Flex>
 
             {/* Right section */}
@@ -86,16 +89,19 @@ export const Header = ({
               <Box position="relative" cursor="pointer" onClick={onCartToggle}>
                 <Text fontSize="2xl">🛒</Text>
                 {cartItemCount > 0 && (
-                  <Badge
+                  <Box
                     position="absolute"
                     top="-8px"
                     right="-8px"
-                    colorPalette="orange"
+                    bg="orange.500"
+                    color="white"
                     borderRadius="full"
                     px={2}
+                    fontSize="xs"
+                    fontWeight="bold"
                   >
                     {cartItemCount}
-                  </Badge>
+                  </Box>
                 )}
                 <Text fontSize="xs" fontWeight="bold">Basket</Text>
               </Box>
@@ -125,17 +131,39 @@ export const Header = ({
         </Box>
       </Box>
 
-      <Drawer.Root open={isCartOpen} onOpenChange={onCartToggle} placement="end" size="md">
-        <Drawer.Backdrop />
-        <Drawer.Positioner>
-          <Drawer.Content>
-            <Drawer.Header>
-              <Drawer.Title>Shopping Cart</Drawer.Title>
-            </Drawer.Header>
-            <Drawer.Body>{cartContent}</Drawer.Body>
-          </Drawer.Content>
-        </Drawer.Positioner>
-      </Drawer.Root>
+      {isCartOpen && (
+        <Box
+          position="fixed"
+          top="0"
+          right="0"
+          width="400px"
+          height="100vh"
+          bg="white"
+          boxShadow="-2px 0 8px rgba(0,0,0,0.1)"
+          zIndex="1000"
+          overflowY="auto"
+        >
+          <Box p={4} borderBottom="1px solid" borderColor="gray.200">
+            <Flex justify="space-between" align="center">
+              <Text fontSize="lg" fontWeight="bold" color="black">Shopping Cart</Text>
+              <Text cursor="pointer" onClick={onCartToggle} fontSize="xl" color="black">×</Text>
+            </Flex>
+          </Box>
+          <Box p={4}>{cartContent}</Box>
+        </Box>
+      )}
+      {isCartOpen && (
+        <Box
+          position="fixed"
+          top="0"
+          left="0"
+          width="100vw"
+          height="100vh"
+          bg="blackAlpha.600"
+          zIndex="999"
+          onClick={onCartToggle}
+        />
+      )}
     </>
   )
 }
