@@ -1,9 +1,12 @@
+import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectFilteredProducts } from './productsSelectors'
 import { addToCart } from '../cart/cartSlice'
 import { ProductList as ProductListUI } from '../../components/organisms/ProductList'
+import { startViewTransition } from '../../utils/viewTransition'
 
-export default function ProductList({ onProductClick }) {
+export default function ProductList() {
+  const navigate = useNavigate()
   const products = useSelector(selectFilteredProducts)
   const dispatch = useDispatch()
 
@@ -11,5 +14,9 @@ export default function ProductList({ onProductClick }) {
     dispatch(addToCart({ product, quantity: 1 }))
   }
 
-  return <ProductListUI products={products} onAddToCart={handleAddToCart} onProductClick={onProductClick} />
+  const handleProductClick = (productId) => {
+    startViewTransition(() => navigate(`/product/${productId}`))
+  }
+
+  return <ProductListUI products={products} onAddToCart={handleAddToCart} onProductClick={handleProductClick} />
 }

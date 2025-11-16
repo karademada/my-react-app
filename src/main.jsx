@@ -3,6 +3,7 @@ import { Provider } from 'react-redux'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import { store } from './store'
 import App from './App'
+import './index.css'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 

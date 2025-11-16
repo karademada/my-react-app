@@ -1,14 +1,18 @@
+import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { Box } from '@chakra-ui/react'
 import { selectAllProducts } from './productsSelectors'
 import { addToCart } from '../cart/cartSlice'
 import { ProductDetail } from '../../components/organisms/ProductDetail'
 import { Button } from '../../components/atoms/Button'
+import { startViewTransition } from '../../utils/viewTransition'
 
-export default function ProductDetailPage({ productId, onBack }) {
+export default function ProductDetailPage() {
+  const { id } = useParams()
+  const navigate = useNavigate()
   const products = useSelector(selectAllProducts)
   const dispatch = useDispatch()
-  const product = products.find(p => p.id === productId)
+  const product = products.find(p => p.id === parseInt(id))
 
   const handleAddToCart = ({ selectedSize, selectedColor, quantity }) => {
     dispatch(addToCart({ 
@@ -26,7 +30,7 @@ export default function ProductDetailPage({ productId, onBack }) {
 
   return (
     <Box>
-      <Button onClick={onBack} mb={4}>← Back to Products</Button>
+      <Button onClick={() => startViewTransition(() => navigate('/'))} mb={4}>← Back to Products</Button>
       <ProductDetail product={product} onAddToCart={handleAddToCart} />
     </Box>
   )
