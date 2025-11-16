@@ -5,7 +5,6 @@ import { selectAllProducts } from './productsSelectors'
 import { addToCart } from '../cart/cartSlice'
 import { ProductDetail } from '../../components/organisms/ProductDetail'
 import { Button } from '../../components/atoms/Button'
-import { startViewTransition } from '../../utils/viewTransition'
 
 export default function ProductDetailPage() {
   const { id } = useParams()
@@ -30,7 +29,7 @@ export default function ProductDetailPage() {
 
   return (
     <Box>
-      <Button onClick={() => startViewTransition(() => navigate('/'))} mb={4}>← Back to Products</Button>
+      <Button onClick={() => navigate('/')} mb={4}>← Back to Products</Button>
       <ProductDetail product={product} onAddToCart={handleAddToCart} />
     </Box>
   )

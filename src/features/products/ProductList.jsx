@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { selectFilteredProducts } from './productsSelectors'
 import { addToCart } from '../cart/cartSlice'
 import { ProductList as ProductListUI } from '../../components/organisms/ProductList'
-import { startViewTransition } from '../../utils/viewTransition'
 
 export default function ProductList() {
   const navigate = useNavigate()
@@ -15,7 +14,7 @@ export default function ProductList() {
   }
 
   const handleProductClick = (productId) => {
-    startViewTransition(() => navigate(`/product/${productId}`))
+    navigate(`/product/${productId}`)
   }
 
   return <ProductListUI products={products} onAddToCart={handleAddToCart} onProductClick={handleProductClick} />
