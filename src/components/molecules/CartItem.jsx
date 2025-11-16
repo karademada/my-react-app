@@ -1,11 +1,18 @@
-import { Box, Flex, Heading, Text, HStack, Input } from '@chakra-ui/react'
+import { Box, Flex, Heading, Text, HStack, Input, Image } from '@chakra-ui/react'
 import { Button } from '../atoms/Button'
 
 export const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   return (
     <Box borderWidth="1px" borderRadius="lg" p={4}>
-      <Flex justify="space-between" align="center">
-        <Box>
+      <Flex gap={3} align="center">
+        <Image
+          src={item.image || `https://via.placeholder.com/80?text=${item.name}`}
+          alt={item.name}
+          boxSize="80px"
+          objectFit="cover"
+          borderRadius="md"
+        />
+        <Box flex={1}>
           <Heading size="sm">{item.name}</Heading>
           <Text color="gray.600">${item.price}</Text>
         </Box>

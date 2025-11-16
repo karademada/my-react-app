@@ -3,8 +3,15 @@ import { Button } from '../atoms/Button'
 
 export const ProductCard = ({ product, onAddToCart, disabled }) => {
   return (
-    <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p={4}>
-      <Stack gap={3}>
+    <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
+      <Image
+        src={product.image || `https://via.placeholder.com/300x200?text=${product.name}`}
+        alt={product.name}
+        width="100%"
+        height="200px"
+        objectFit="cover"
+      />
+      <Stack gap={3} p={4}>
         <Heading size="md">{product.name}</Heading>
         <Text fontSize="2xl" fontWeight="bold" color="blue.600">
           ${product.price}
