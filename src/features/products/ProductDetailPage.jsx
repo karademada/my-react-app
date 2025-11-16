@@ -14,6 +14,8 @@ export default function ProductDetailPage({ productId, onBack }) {
     dispatch(addToCart({ 
       product: {
         ...product,
+        selectedSize,
+        selectedColor,
         name: `${product.name}${selectedSize ? ` - Size ${selectedSize}` : ''}${selectedColor ? ` - ${selectedColor.name}` : ''}`
       }, 
       quantity 

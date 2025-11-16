@@ -5,36 +5,78 @@ describe('Cart Domain Logic', () => {
   const mockProduct = { id: 1, name: 'Product 1', price: 10 }
   const mockProduct2 = { id: 2, name: 'Product 2', price: 20 }
 
+  describe('getCartItemKey', () => {
+    it('should generate key for product without variants', () => {
+      expect(cartDomain.getCartItemKey(mockProduct)).toBe('1')
+    })
+
+    it('should generate key with size', () => {
+      expect(cartDomain.getCartItemKey({ ...mockProduct, selectedSize: 'M' })).toBe('1-M')
+    })
+
+    it('should generate key with color', () => {
+      expect(cartDomain.getCartItemKey({ ...mockProduct, selectedColor: { name: 'Red' } })).toBe('1-Red')
+    })
+
+    it('should generate key with size and color', () => {
+      expect(cartDomain.getCartItemKey({ ...mockProduct, selectedSize: 'L', selectedColor: { name: 'Blue' } })).toBe('1-L-Blue')
+    })
+  })
+
   describe('addItem', () => {
     it('should add new item to empty cart', () => {
       const result = cartDomain.addItem([], mockProduct, 1)
-      expect(result).toEqual([{ ...mockProduct, quantity: 1 }])
+      expect(result).toEqual([{ ...mockProduct, cartKey: '1', quantity: 1 }])
     })
 
     it('should increment quantity if item exists', () => {
-      const items = [{ ...mockProduct, quantity: 1 }]
+      const items = [{ ...mockProduct, cartKey: '1', quantity: 1 }]
       const result = cartDomain.addItem(items, mockProduct, 2)
       expect(result[0].quantity).toBe(3)
     })
 
     it('should add multiple different items', () => {
-      const items = [{ ...mockProduct, quantity: 1 }]
+      const items = [{ ...mockProduct, cartKey: '1', quantity: 1 }]
       const result = cartDomain.addItem(items, mockProduct2, 1)
       expect(result).toHaveLength(2)
+    })
+
+    it('should treat same product with different sizes as separate items', () => {
+      const productSizeM = { ...mockProduct, selectedSize: 'M' }
+      const productSizeL = { ...mockProduct, selectedSize: 'L' }
+      const items = cartDomain.addItem([], productSizeM, 1)
+      const result = cartDomain.addItem(items, productSizeL, 1)
+      expect(result).toHaveLength(2)
+    })
+
+    it('should treat same product with different colors as separate items', () => {
+      const productRed = { ...mockProduct, selectedColor: { name: 'Red' } }
+      const productBlue = { ...mockProduct, selectedColor: { name: 'Blue' } }
+      const items = cartDomain.addItem([], productRed, 1)
+      const result = cartDomain.addItem(items, productBlue, 1)
+      expect(result).toHaveLength(2)
+    })
+
+    it('should increment quantity for same product with same variants', () => {
+      const productSizeM = { ...mockProduct, selectedSize: 'M', selectedColor: { name: 'Red' } }
+      const items = cartDomain.addItem([], productSizeM, 1)
+      const result = cartDomain.addItem(items, productSizeM, 2)
+      expect(result).toHaveLength(1)
+      expect(result[0].quantity).toBe(3)
     })
   })
 
   describe('removeItem', () => {
     it('should remove item from cart', () => {
-      const items = [{ ...mockProduct, quantity: 1 }]
+      const items = [{ ...mockProduct, cartKey: '1', quantity: 1 }]
       const result = cartDomain.removeItem(items, 1)
       expect(result).toEqual([])
     })
 
     it('should not affect other items', () => {
       const items = [
-        { ...mockProduct, quantity: 1 },
-        { ...mockProduct2, quantity: 1 }
+        { ...mockProduct, cartKey: '1', quantity: 1 },
+        { ...mockProduct2, cartKey: '2', quantity: 1 }
       ]
       const result = cartDomain.removeItem(items, 1)
       expect(result).toHaveLength(1)

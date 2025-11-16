@@ -11,6 +11,26 @@ describe('Cart Slice', () => {
     expect(state.items[0].quantity).toBe(1)
   })
 
+  it('should handle addToCart with size variant', () => {
+    const productWithSize = { ...mockProduct, selectedSize: 'M' }
+    const state = cartReducer(initialState, addToCart({ product: productWithSize, quantity: 1 }))
+    expect(state.items).toHaveLength(1)
+    expect(state.items[0].selectedSize).toBe('M')
+  })
+
+  it('should handle addToCart with color variant', () => {
+    const productWithColor = { ...mockProduct, selectedColor: { name: 'Red', hex: '#FF0000' } }
+    const state = cartReducer(initialState, addToCart({ product: productWithColor, quantity: 1 }))
+    expect(state.items).toHaveLength(1)
+    expect(state.items[0].selectedColor.name).toBe('Red')
+  })
+
+  it('should treat same product with different variants as separate items', () => {
+    let state = cartReducer(initialState, addToCart({ product: { ...mockProduct, selectedSize: 'M' }, quantity: 1 }))
+    state = cartReducer(state, addToCart({ product: { ...mockProduct, selectedSize: 'L' }, quantity: 1 }))
+    expect(state.items).toHaveLength(2)
+  })
+
   it('should handle removeFromCart', () => {
     const state = { items: [{ ...mockProduct, quantity: 1 }], discountPercent: 0 }
     const newState = cartReducer(state, removeFromCart(1))

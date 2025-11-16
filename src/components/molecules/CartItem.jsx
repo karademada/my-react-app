@@ -14,6 +14,15 @@ export const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
         />
         <Box flex={1} minW="0">
           <Heading size="sm" noOfLines={2} wordBreak="break-word">{item.name}</Heading>
+          {item.selectedSize && (
+            <Text fontSize="xs" color="gray.500">Size: {item.selectedSize}</Text>
+          )}
+          {item.selectedColor && (
+            <Flex align="center" gap={1}>
+              <Box width="12px" height="12px" bg={item.selectedColor.hex} borderRadius="sm" border="1px solid" borderColor="gray.300" />
+              <Text fontSize="xs" color="gray.500">{item.selectedColor.name}</Text>
+            </Flex>
+          )}
           <Text color="gray.600">${item.price}</Text>
         </Box>
         <Flex direction="column" gap={2} align="flex-end" minW="120px">
