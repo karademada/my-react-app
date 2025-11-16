@@ -15,6 +15,8 @@ const mockItems = [
 export const LoggedOut = {
   render: () => {
     const [isOpen, setIsOpen] = useState(false)
+    const [search, setSearch] = useState('')
+    const [category, setCategory] = useState(null)
     return (
       <Header
         isAuthenticated={false}
@@ -22,9 +24,14 @@ export const LoggedOut = {
         loyaltyPoints={0}
         cartItemCount={0}
         isCartOpen={isOpen}
+        searchQuery={search}
+        selectedCategory={category}
+        categories={['electronics', 'clothing', 'books']}
         onLogin={() => console.log('Login')}
         onLogout={() => console.log('Logout')}
         onCartToggle={() => setIsOpen(!isOpen)}
+        onSearchChange={setSearch}
+        onCategoryChange={setCategory}
         cartContent={<div>Empty cart</div>}
       />
     )
@@ -34,6 +41,8 @@ export const LoggedOut = {
 export const LoggedInWithCart = {
   render: () => {
     const [isOpen, setIsOpen] = useState(false)
+    const [search, setSearch] = useState('')
+    const [category, setCategory] = useState(null)
     return (
       <Header
         isAuthenticated={true}
@@ -41,9 +50,14 @@ export const LoggedInWithCart = {
         loyaltyPoints={150}
         cartItemCount={3}
         isCartOpen={isOpen}
+        searchQuery={search}
+        selectedCategory={category}
+        categories={['electronics', 'clothing', 'books']}
         onLogin={() => console.log('Login')}
         onLogout={() => console.log('Logout')}
         onCartToggle={() => setIsOpen(!isOpen)}
+        onSearchChange={setSearch}
+        onCategoryChange={setCategory}
         cartContent={
           <ShoppingCart
             items={mockItems}
