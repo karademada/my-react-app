@@ -1,11 +1,56 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Box, Flex, Heading, Text, Image, Grid, Stack } from '@chakra-ui/react'
 import { Button } from '../atoms/Button'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export const ProductDetail = ({ product, onAddToCart }) => {
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || null)
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || null)
   const [quantity, setQuantity] = useState(1)
+  
+  const imageRef = useRef(null)
+  const headingRef = useRef(null)
+  const priceRef = useRef(null)
+  const descRef = useRef(null)
+  const colorRef = useRef(null)
+  const sizeRef = useRef(null)
+  const quantityRef = useRef(null)
+  const buttonRef = useRef(null)
+
+  useEffect(() => {
+    const elements = [
+      { ref: imageRef, x: -50, delay: 0 },
+      { ref: headingRef, x: 50, delay: 0.1 },
+      { ref: priceRef, x: 50, delay: 0.2 },
+      { ref: descRef, x: 50, delay: 0.3 },
+      { ref: colorRef, x: 50, delay: 0.4 },
+      { ref: sizeRef, x: 50, delay: 0.5 },
+      { ref: quantityRef, x: 50, delay: 0.6 },
+      { ref: buttonRef, x: 50, delay: 0.7 },
+    ]
+
+    elements.forEach(({ ref, x, delay }) => {
+      if (ref.current) {
+        gsap.fromTo(ref.current,
+          { opacity: 0, x },
+          { opacity: 1, x: 0, duration: 0.8, delay, ease: 'power2.out' }
+        )
+
+        gsap.to(ref.current, {
+          scrollTrigger: {
+            trigger: ref.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+          },
+          y: -30,
+        })
+      }
+    })
+  }, [product])
 
   const handleAddToCart = () => {
     onAddToCart({
@@ -19,7 +64,7 @@ export const ProductDetail = ({ product, onAddToCart }) => {
   return (
     <Box maxW="1200px" mx="auto" p={6}>
       <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={8}>
-        <Box>
+        <Box ref={imageRef}>
           <Image
             src={product.image}
             alt={product.name}
@@ -30,14 +75,14 @@ export const ProductDetail = ({ product, onAddToCart }) => {
         </Box>
         
         <Stack gap={4}>
-          <Heading size="lg">{product.name}</Heading>
-          <Text fontSize="2xl" fontWeight="bold" color="orange.500">
+          <Heading ref={headingRef} size="lg">{product.name}</Heading>
+          <Text ref={priceRef} fontSize="2xl" fontWeight="bold" color="orange.500">
             ${product.price}
           </Text>
-          <Text color="gray.600">{product.description}</Text>
+          <Text ref={descRef} color="gray.600">{product.description}</Text>
 
           {product.colors && product.colors.length > 0 && (
-            <Box>
+            <Box ref={colorRef}>
               <Text fontWeight="bold" mb={2}>Color: {selectedColor?.name}</Text>
               <Flex gap={2} flexWrap="wrap">
                 {product.colors.map((color) => (
@@ -57,7 +102,7 @@ export const ProductDetail = ({ product, onAddToCart }) => {
           )}
 
           {product.sizes && product.sizes.length > 0 && (
-            <Box>
+            <Box ref={sizeRef}>
               <Text fontWeight="bold" mb={2}>Size</Text>
               <Flex gap={2} flexWrap="wrap">
                 {product.sizes.map((size) => (
@@ -81,7 +126,7 @@ export const ProductDetail = ({ product, onAddToCart }) => {
             </Box>
           )}
 
-          <Box>
+          <Box ref={quantityRef}>
             <Text fontWeight="bold" mb={2}>Quantity</Text>
             <Flex gap={2} align="center">
               <Button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
@@ -90,14 +135,16 @@ export const ProductDetail = ({ product, onAddToCart }) => {
             </Flex>
           </Box>
 
-          <Button
-            colorScheme="orange"
-            size="lg"
-            width="100%"
-            onClick={handleAddToCart}
-          >
-            Add to Basket
-          </Button>
+          <Box ref={buttonRef}>
+            <Button
+              colorScheme="orange"
+              size="lg"
+              width="100%"
+              onClick={handleAddToCart}
+            >
+              Add to Basket
+            </Button>
+          </Box>
         </Stack>
       </Grid>
     </Box>
