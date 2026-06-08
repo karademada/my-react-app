@@ -1,57 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import type { PriceRange, ProductsState } from '../../types'
+import type { PriceRange, Product, ProductsState } from '../../types'
+import { fetchProducts as apiFetchProducts } from '../../api/strapi'
 
 const initialState: ProductsState = {
-  items: [
-    {
-      id: 1,
-      name: 'Laptop',
-      price: 1000,
-      category: 'electronics',
-      stock: 5,
-      image:
-        'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300',
-      description: 'High-performance laptop for work and gaming',
-    },
-    {
-      id: 2,
-      name: 'Phone',
-      price: 500,
-      category: 'electronics',
-      stock: 10,
-      image:
-        'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300',
-      description: 'Latest smartphone with advanced features',
-      colors: [
-        { name: 'Black', hex: '#000000' },
-        { name: 'White', hex: '#FFFFFF' },
-        { name: 'Blue', hex: '#0000FF' },
-      ],
-    },
-    {
-      id: 3,
-      name: 'Shirt',
-      price: 50,
-      category: 'clothing',
-      stock: 20,
-      image:
-        'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300',
-      description: 'Comfortable cotton shirt',
-      sizes: ['S', 'M', 'L', 'XL'],
-      colors: [
-        { name: 'White', hex: '#FFFFFF' },
-        { name: 'Black', hex: '#000000' },
-        { name: 'Navy', hex: '#001F3F' },
-      ],
-    },
-  ],
+  items: [],
   filters: {
     category: null,
     priceRange: { min: 0, max: Infinity },
     searchQuery: '',
   },
 }
+
+export const fetchProducts = createAsyncThunk<Product[]>(
+  'products/fetch',
+  async () => {
+    return apiFetchProducts()
+  },
+)
 
 export const productsSlice = createSlice({
   name: 'products',
@@ -69,6 +35,11 @@ export const productsSlice = createSlice({
     clearFilters: (state) => {
       state.filters = initialState.filters
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchProducts.fulfilled, (state, action) => {
+      state.items = action.payload
+    })
   },
 })
 
