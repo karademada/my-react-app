@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { Grid, Heading, Box } from '@chakra-ui/react'
-import { ProductCard } from '../molecules/ProductCard'
 import gsap from 'gsap'
+import { ProductCard } from '../molecules/ProductCard'
 import type { Product } from '../../types'
 
 export interface ProductListProps {
@@ -22,21 +21,49 @@ export const ProductList = ({
     if (cards) {
       gsap.fromTo(
         cards,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out' },
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out' },
       )
     }
   }, [products])
 
   return (
-    <Box>
-      <Heading size="lg" mb={4}>
-        Products
-      </Heading>
-      <Grid
+    <section style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 32px 24px' }}>
+      <div style={{ marginBottom: 28, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 11,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            color: 'var(--moss-700)',
+            fontWeight: 500,
+          }}
+        >
+          Récolte 2025 · Madagascar
+        </span>
+        <h1
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'clamp(34px, 4.6vw, 52px)',
+            fontWeight: 600,
+            lineHeight: 1.05,
+            letterSpacing: '-0.035em',
+            color: 'var(--ink-900)',
+            margin: 0,
+          }}
+        >
+          Le geste juste, <span style={{ color: 'var(--text-muted)' }}>de la terre à vous.</span>
+        </h1>
+      </div>
+
+      <div
         ref={gridRef}
-        templateColumns="repeat(auto-fill, minmax(250px, 1fr))"
-        gap={4}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+          gap: 24,
+        }}
       >
         {products.map((product) => (
           <ProductCard
@@ -46,7 +73,9 @@ export const ProductList = ({
             onProductClick={onProductClick}
           />
         ))}
-      </Grid>
-    </Box>
+      </div>
+    </section>
   )
 }
+
+export default ProductList

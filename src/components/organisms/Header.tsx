@@ -1,14 +1,8 @@
 import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
-import { Box, Flex, Heading, HStack, Input, Text, chakra } from '@chakra-ui/react'
-
-const SelectBox = chakra('select')
-import { Button } from '../atoms/Button'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { User } from '../../types'
-
-gsap.registerPlugin(ScrollTrigger)
+import { Button } from '../atoms/Button'
 
 export interface HeaderProps {
   isAuthenticated: boolean
@@ -26,6 +20,27 @@ export interface HeaderProps {
   onCategoryChange: (category: string | null) => void
   cartContent?: ReactNode
 }
+
+const Wordmark = () => (
+  <a
+    href="/"
+    style={{
+      fontFamily: 'var(--font-display)',
+      fontWeight: 700,
+      fontSize: 22,
+      letterSpacing: '-0.02em',
+      color: 'var(--ink-900)',
+      textDecoration: 'none',
+      lineHeight: 1,
+      display: 'inline-flex',
+      alignItems: 'baseline',
+    }}
+  >
+    place
+    <span style={{ color: 'var(--moss-600)', padding: '0 1px' }}>·</span>
+    kabar
+  </a>
+)
 
 export const Header = ({
   isAuthenticated,
@@ -45,220 +60,252 @@ export const Header = ({
 }: HeaderProps) => {
   const cartRef = useRef<HTMLDivElement>(null)
   const backdropRef = useRef<HTMLDivElement>(null)
-  const headerRef = useRef<HTMLDivElement>(null)
-  const topBarRef = useRef<HTMLDivElement>(null)
-  const categoryNavRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isCartOpen) {
       gsap.fromTo(
         cartRef.current,
         { x: 400, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.3, ease: 'power2.out' },
+        { x: 0, opacity: 1, duration: 0.24, ease: 'power2.out' },
       )
       gsap.fromTo(
         backdropRef.current,
         { opacity: 0 },
-        { opacity: 1, duration: 0.3 },
+        { opacity: 1, duration: 0.24 },
       )
     }
   }, [isCartOpen])
 
-  useEffect(() => {
-    gsap.fromTo(
-      topBarRef.current,
-      { y: -50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' },
-    )
-    gsap.fromTo(
-      categoryNavRef.current,
-      { y: -30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, delay: 0.2, ease: 'power2.out' },
-    )
-
-    gsap.to(headerRef.current, {
-      scrollTrigger: {
-        trigger: document.body,
-        start: 'top top',
-        end: '+=300',
-        scrub: 1,
-      },
-      y: -50,
-      opacity: 0.8,
-    })
-  }, [])
-
   return (
     <>
-      <Box ref={headerRef} bg="gray.900" color="white">
-        <Box ref={topBarRef} px={8} py={3}>
-          <Flex justify="space-between" align="center" gap={4}>
-            <Heading size="md" minW="150px">
-              Redux Shop
-            </Heading>
+      <header
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          background: 'var(--bg-surface)',
+          borderBottom: '1px solid var(--line)',
+        }}
+      >
+        <div style={{ background: 'var(--ink-900)', color: 'var(--paper-0)', textAlign: 'center', padding: '8px 16px', fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          Livraison neutre en carbone · Récolte éthique tracée de Madagascar
+        </div>
 
-            <Flex flex={1} maxW="800px" gap={0}>
-              <SelectBox
-                value={selectedCategory ?? 'all'}
-                onChange={(e) =>
-                  onCategoryChange(
-                    e.target.value === 'all' ? null : e.target.value,
-                  )
-                }
-                bg="gray.100"
-                color="black"
-                borderRightRadius="0"
-                width="150px"
-                px={3}
-                py={2}
-                border="none"
-              >
-                <option value="all">All</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </SelectBox>
-              <Input
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                bg="white"
-                color="black"
-                borderRadius="0"
-                flex={1}
-              />
-              <Button colorScheme="orange" borderLeftRadius="0" px={6}>
-                🔍
-              </Button>
-            </Flex>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 24,
+            padding: '18px 32px',
+            maxWidth: 1280,
+            margin: '0 auto',
+          }}
+        >
+          <Wordmark />
 
-            <HStack gap={4}>
-              {isAuthenticated && user ? (
-                <Box textAlign="right" cursor="pointer">
-                  <Text fontSize="xs">
-                    Hello, {user.email?.split('@')[0] ?? ''}
-                  </Text>
-                  <Text fontSize="sm" fontWeight="bold" onClick={onLogout}>
-                    Logout
-                  </Text>
-                </Box>
-              ) : (
-                <HStack gap={2}>
-                  <Input
-                    placeholder="Email"
-                    type="email"
-                    id="header-email"
-                    size="sm"
-                    bg="white"
-                    color="black"
-                    width="150px"
-                  />
-                  <Button colorScheme="orange" size="sm" onClick={onLogin}>
-                    Login
-                  </Button>
-                </HStack>
-              )}
-
-              <Box position="relative" cursor="pointer" onClick={onCartToggle}>
-                <Text fontSize="2xl">🛒</Text>
-                {cartItemCount > 0 && (
-                  <Box
-                    position="absolute"
-                    top="-8px"
-                    right="-8px"
-                    bg="orange.500"
-                    color="white"
-                    borderRadius="full"
-                    px={2}
-                    fontSize="xs"
-                    fontWeight="bold"
-                  >
-                    {cartItemCount}
-                  </Box>
-                )}
-                <Text fontSize="xs" fontWeight="bold">
-                  Basket
-                </Text>
-              </Box>
-            </HStack>
-          </Flex>
-        </Box>
-
-        <Box ref={categoryNavRef} bg="gray.800" px={8} py={2}>
-          <HStack gap={4} fontSize="sm">
-            <Text
-              cursor="pointer"
-              _hover={{ textDecoration: 'underline' }}
-              onClick={() => onCategoryChange(null)}
+          <div style={{ display: 'flex', flex: 1, maxWidth: 540, gap: 0, alignItems: 'center' }}>
+            <input
+              placeholder="Rechercher un produit…"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              style={{
+                flex: 1,
+                fontFamily: 'var(--font-sans)',
+                fontSize: 14,
+                color: 'var(--ink-900)',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--line)',
+                borderRight: 'none',
+                borderRadius: 'var(--radius-md) 0 0 var(--radius-md)',
+                padding: '10px 16px',
+                outline: 'none',
+              }}
+            />
+            <button
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: 14,
+                fontWeight: 600,
+                color: 'var(--paper-0)',
+                background: 'var(--ink-900)',
+                border: '1px solid var(--ink-900)',
+                borderRadius: '0 var(--radius-md) var(--radius-md) 0',
+                padding: '10px 18px',
+                cursor: 'pointer',
+              }}
             >
-              All
-            </Text>
+              Chercher
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+            {isAuthenticated && user ? (
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Bonjour</div>
+                <button onClick={onLogout} style={{ background: 'none', border: 'none', padding: 0, fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--ink-900)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+                  {user.email?.split('@')[0] ?? ''} · Déconnexion
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <input
+                  placeholder="email"
+                  type="email"
+                  id="header-email"
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 13,
+                    color: 'var(--ink-900)',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--line)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '8px 12px',
+                    width: 150,
+                    outline: 'none',
+                  }}
+                />
+                <Button colorScheme="ink" size="sm" onClick={onLogin}>Connexion</Button>
+              </div>
+            )}
+
+            <button
+              onClick={onCartToggle}
+              style={{
+                position: 'relative',
+                background: 'transparent',
+                border: '1px solid var(--line)',
+                borderRadius: 'var(--radius-md)',
+                padding: '8px 14px',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-sans)',
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'var(--ink-900)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              Panier
+              {cartItemCount > 0 && (
+                <span
+                  style={{
+                    background: 'var(--ink-900)',
+                    color: 'var(--paper-0)',
+                    borderRadius: 'var(--radius-pill)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    padding: '2px 8px',
+                  }}
+                >
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        <nav
+          style={{
+            borderTop: '1px solid var(--line)',
+            background: 'var(--paper-100)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              gap: 28,
+              padding: '10px 32px',
+              maxWidth: 1280,
+              margin: '0 auto',
+              alignItems: 'center',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+            }}
+          >
+            <span
+              onClick={() => onCategoryChange(null)}
+              style={{
+                cursor: 'pointer',
+                color: selectedCategory === null ? 'var(--ink-900)' : 'var(--text-muted)',
+                fontWeight: selectedCategory === null ? 600 : 500,
+                borderBottom: selectedCategory === null ? '2px solid var(--moss-600)' : '2px solid transparent',
+                paddingBottom: 2,
+              }}
+            >
+              Toute la collection
+            </span>
             {categories.map((cat) => (
-              <Text
+              <span
                 key={cat}
-                cursor="pointer"
-                _hover={{ textDecoration: 'underline' }}
                 onClick={() => onCategoryChange(cat)}
-                fontWeight={selectedCategory === cat ? 'bold' : 'normal'}
+                style={{
+                  cursor: 'pointer',
+                  color: selectedCategory === cat ? 'var(--ink-900)' : 'var(--text-muted)',
+                  fontWeight: selectedCategory === cat ? 600 : 500,
+                  borderBottom: selectedCategory === cat ? '2px solid var(--moss-600)' : '2px solid transparent',
+                  paddingBottom: 2,
+                }}
               >
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-              </Text>
+                {cat}
+              </span>
             ))}
             {isAuthenticated && (
-              <Text fontSize="xs" ml="auto">
-                Loyalty Points: {loyaltyPoints}
-              </Text>
+              <span style={{ marginLeft: 'auto', color: 'var(--moss-700)' }}>
+                Fidélité · {loyaltyPoints} pts
+              </span>
             )}
-          </HStack>
-        </Box>
-      </Box>
+          </div>
+        </nav>
+      </header>
 
       {isCartOpen && (
-        <Box
+        <div
           ref={cartRef}
-          position="fixed"
-          top="0"
-          right="0"
-          width="400px"
-          height="100vh"
-          bg="white"
-          boxShadow="-2px 0 8px rgba(0,0,0,0.1)"
-          zIndex="1000"
-          overflowY="auto"
+          style={{
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            width: 400,
+            height: '100vh',
+            background: 'var(--bg-surface)',
+            boxShadow: 'var(--shadow-lg)',
+            zIndex: 1000,
+            overflowY: 'auto',
+          }}
         >
-          <Box p={4} borderBottom="1px solid" borderColor="gray.200">
-            <Flex justify="space-between" align="center">
-              <Text fontSize="lg" fontWeight="bold" color="black">
-                Shopping Cart
-              </Text>
-              <Text
-                cursor="pointer"
-                onClick={onCartToggle}
-                fontSize="xl"
-                color="black"
-              >
-                ×
-              </Text>
-            </Flex>
-          </Box>
-          <Box p={4}>{cartContent}</Box>
-        </Box>
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 18, color: 'var(--ink-900)' }}>Votre panier</span>
+            <button
+              onClick={onCartToggle}
+              style={{ background: 'none', border: 'none', fontFamily: 'var(--font-sans)', fontSize: 22, color: 'var(--ink-900)', cursor: 'pointer', lineHeight: 1 }}
+              aria-label="Fermer"
+            >×</button>
+          </div>
+          <div style={{ padding: 16 }}>{cartContent}</div>
+        </div>
       )}
       {isCartOpen && (
-        <Box
+        <div
           ref={backdropRef}
-          position="fixed"
-          top="0"
-          left="0"
-          width="100vw"
-          height="100vh"
-          bg="blackAlpha.600"
-          zIndex="999"
           onClick={onCartToggle}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(26,21,18,.42)',
+            zIndex: 999,
+          }}
         />
       )}
     </>
   )
 }
+
+export default Header

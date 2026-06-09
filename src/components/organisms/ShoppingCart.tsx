@@ -1,4 +1,3 @@
-import { Box, Heading, Stack, Text, Flex, Input, HStack } from '@chakra-ui/react'
 import { CartItem } from '../molecules/CartItem'
 import { Button } from '../atoms/Button'
 import type { CartItem as CartItemType } from '../../types'
@@ -14,6 +13,8 @@ export interface ShoppingCartProps {
   onClearCart: () => void
 }
 
+const fmt = (n: number) => '€ ' + Number(n).toFixed(2).replace('.', ',')
+
 export const ShoppingCart = ({
   items,
   total,
@@ -24,15 +25,27 @@ export const ShoppingCart = ({
   onApplyDiscount,
   onClearCart,
 }: ShoppingCartProps) => {
+  const count = items.reduce((sum, item) => sum + item.quantity, 0)
+
   return (
-    <Box borderWidth="1px" borderRadius="lg" p={6}>
-      <Heading size="lg" mb={4}>
-        Shopping Cart ({items.reduce((sum, item) => sum + item.quantity, 0)}{' '}
-        items)
-      </Heading>
-      <Stack gap={3}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+        {count} article{count > 1 ? 's' : ''}
+      </div>
+
+      <div>
         {items.length === 0 ? (
-          <Text color="gray.500">Your cart is empty</Text>
+          <div
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: 14,
+              color: 'var(--text-muted)',
+              padding: '24px 0',
+              textAlign: 'center',
+            }}
+          >
+            Votre panier est vide.
+          </div>
         ) : (
           items.map((item) => (
             <CartItem
@@ -43,38 +56,62 @@ export const ShoppingCart = ({
             />
           ))
         )}
-      </Stack>
+      </div>
+
       {items.length > 0 && (
-        <Box mt={4}>
-          <Text fontSize="lg">Subtotal: ${total.toFixed(2)}</Text>
-          <HStack mt={2}>
-            <Input
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 6 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--text-muted)' }}>
+            <span>Sous-total</span>
+            <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--ink-900)' }}>{fmt(total)}</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+              Remise
+            </span>
+            <input
               type="number"
-              placeholder="Discount %"
+              placeholder="0"
               value={discount}
-              onChange={(e) =>
-                onApplyDiscount(parseInt(e.target.value, 10) || 0)
-              }
-              width="150px"
+              onChange={(e) => onApplyDiscount(parseInt(e.target.value, 10) || 0)}
+              style={{
+                width: 80,
+                fontFamily: 'var(--font-mono)',
+                fontSize: 13,
+                color: 'var(--ink-900)',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--line)',
+                borderRadius: 'var(--radius-md)',
+                padding: '6px 10px',
+                outline: 'none',
+              }}
             />
-          </HStack>
-          <Text fontSize="xl" fontWeight="bold" mt={2}>
-            Total: ${finalTotal.toFixed(2)}
-          </Text>
-          <Flex gap={2} mt={4}>
-            <Button colorScheme="blue" flex={1}>
-              Checkout
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text-muted)' }}>%</span>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              paddingTop: 12,
+              borderTop: '1px solid var(--line)',
+            }}
+          >
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: 'var(--ink-900)' }}>Total</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 19, fontWeight: 600, color: 'var(--ink-900)' }}>{fmt(finalTotal)}</span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
+            <Button colorScheme="joy" size="md" uppercase fullWidth>Valider la commande</Button>
+            <Button variant="ghost" size="sm" onClick={onClearCart} style={{ color: 'var(--text-muted)' }}>
+              Vider le panier
             </Button>
-            <Button
-              variant="outline"
-              colorScheme="red"
-              onClick={onClearCart}
-            >
-              Clear Cart
-            </Button>
-          </Flex>
-        </Box>
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   )
 }
+
+export default ShoppingCart

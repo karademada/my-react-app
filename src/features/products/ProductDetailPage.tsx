@@ -1,10 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { Box } from '@chakra-ui/react'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { selectAllProducts } from './productsSelectors'
 import { addToCart } from '../cart/cartSlice'
 import { ProductDetail } from '../../components/organisms/ProductDetail'
-import { Button } from '../../components/atoms/Button'
 import type { Color, Product } from '../../types'
 
 interface ProductSelection {
@@ -34,7 +32,7 @@ export default function ProductDetailPage() {
           ...product,
           selectedSize,
           selectedColor,
-          name: `${product.name}${selectedSize ? ` - Size ${selectedSize}` : ''}${selectedColor ? ` - ${selectedColor.name}` : ''}`,
+          name: `${product.name}${selectedSize ? ` — ${selectedSize}` : ''}${selectedColor ? ` · ${selectedColor.name}` : ''}`,
         },
         quantity,
       }),
@@ -44,11 +42,26 @@ export default function ProductDetailPage() {
   if (!product) return null
 
   return (
-    <Box>
-      <Button onClick={() => navigate('/')} mb={4}>
-        ← Back to Products
-      </Button>
+    <div>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 32px 0' }}>
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 11,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: 'var(--text-muted)',
+          }}
+        >
+          ← Retour à la collection
+        </button>
+      </div>
       <ProductDetail product={product} onAddToCart={handleAddToCart} />
-    </Box>
+    </div>
   )
 }

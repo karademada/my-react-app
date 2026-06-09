@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Box, Container } from '@chakra-ui/react'
 import ProductList from './features/products/ProductList'
 import ProductDetailPage from './features/products/ProductDetailPage'
 import UserAuth from './features/user/UserAuth'
 import { Footer } from './components/organisms/Footer'
+import CartPage from './components/organisms/CartPage'
 import { useAppDispatch } from './store/hooks'
 import { fetchProducts } from './features/products/productsSlice'
 
@@ -17,16 +17,17 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Box minH="100vh" display="flex" flexDirection="column">
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-canvas)' }}>
         <UserAuth />
-        <Container maxW="container.xl" py={6} flex="1">
+        <main style={{ flex: 1 }}>
           <Routes>
             <Route path="/" element={<ProductList />} />
             <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route path="/cart" element={<CartPage />} />
           </Routes>
-        </Container>
+        </main>
         <Footer />
-      </Box>
+      </div>
     </BrowserRouter>
   )
 }
