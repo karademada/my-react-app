@@ -25,8 +25,11 @@ export interface CartItem extends Product {
 export interface User {
   email: string | null
   token: string | null
+  username?: string
   roles?: string[]
 }
+
+export type AuthStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 
 export interface PriceRange {
   min: number
@@ -52,4 +55,6 @@ export interface ProductsState {
 export interface UserState {
   currentUser: User | null
   loyaltyPoints: number
+  status: AuthStatus
+  error: string | null
 }

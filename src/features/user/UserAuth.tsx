@@ -11,7 +11,7 @@ import {
   selectAllProducts,
 } from '../products/productsSelectors'
 import { setCategory, setSearchQuery } from '../products/productsSlice'
-import { login, logout } from './userSlice'
+import { logout } from './userSlice'
 import { Header } from '../../components/organisms/Header'
 import Cart from '../cart/Cart'
 
@@ -33,12 +33,6 @@ export default function UserAuth() {
     ),
   ]
 
-  const handleLogin = () => {
-    const input = document.getElementById('header-email') as HTMLInputElement | null
-    const email = input?.value ?? ''
-    dispatch(login({ email, token: 'token123', roles: ['customer'] }))
-  }
-
   return (
     <Header
       isAuthenticated={isAuthenticated}
@@ -49,7 +43,6 @@ export default function UserAuth() {
       searchQuery={filters.searchQuery}
       selectedCategory={filters.category}
       categories={categories}
-      onLogin={handleLogin}
       onLogout={() => dispatch(logout())}
       onCartToggle={() => setIsCartOpen(!isCartOpen)}
       onSearchChange={(query) => dispatch(setSearchQuery(query))}

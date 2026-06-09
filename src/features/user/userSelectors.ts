@@ -9,3 +9,7 @@ export const selectCanCheckout = (state: RootState) =>
   userDomain.canCheckout(state.user.currentUser)
 export const selectLoyaltyDiscount = (state: RootState) =>
   userDomain.applyLoyaltyDiscount(state.user.loyaltyPoints)
+export const selectAuthStatus = (state: RootState) => state.user.status
+export const selectAuthError = (state: RootState) => state.user.error
+export const selectIsAuthLoading = (state: RootState) =>
+  state.user.status === 'loading'

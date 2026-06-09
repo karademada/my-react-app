@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import gsap from 'gsap'
 import type { User } from '../../types'
-import { Button } from '../atoms/Button'
 
 export interface HeaderProps {
   isAuthenticated: boolean
@@ -13,7 +12,7 @@ export interface HeaderProps {
   searchQuery: string
   selectedCategory: string | null
   categories: string[]
-  onLogin: () => void
+  onLogin?: () => void
   onLogout: () => void
   onCartToggle: () => void
   onSearchChange: (query: string) => void
@@ -148,24 +147,41 @@ export const Header = ({
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <input
-                  placeholder="email"
-                  type="email"
-                  id="header-email"
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <a
+                  href="/register"
                   style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: 13,
                     color: 'var(--ink-900)',
-                    background: 'var(--bg-surface)',
-                    border: '1px solid var(--line)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '8px 12px',
-                    width: 150,
-                    outline: 'none',
+                    textDecoration: 'underline',
+                    textUnderlineOffset: 3,
                   }}
-                />
-                <Button colorScheme="ink" size="sm" onClick={onLogin}>Connexion</Button>
+                >
+                  Inscription
+                </a>
+                <a
+                  href="/login"
+                  onClick={onLogin}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 34,
+                    padding: '8px 14px',
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    letterSpacing: '-0.005em',
+                    color: 'var(--paper-0)',
+                    background: 'var(--ink-900)',
+                    border: '1.5px solid var(--ink-900)',
+                    borderRadius: 'var(--radius-md)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Connexion
+                </a>
               </div>
             )}
 
