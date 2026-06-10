@@ -1,12 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { cartDomain } from './cartDomain'
-import type { CartState, Product } from '../../types'
+import { createCheckoutSession } from '../../api/strapi'
+import type { CartItem, CartState, Product } from '../../types'
 
 const initialState: CartState = {
   items: [],
   discountPercent: 0,
+  checkoutStatus: 'idle',
+  checkoutError: null,
 }
+
+export const startCheckout = createAsyncThunk(
+  'cart/startCheckout',
+  async (items: CartItem[]) => {
+    const url = await createCheckoutSession(cartDomain.toCheckoutPayload(items))
+    window.location.assign(url)
+  },
+)
 
 export const cartSlice = createSlice({
   name: 'cart',
@@ -36,6 +47,22 @@ export const cartSlice = createSlice({
       state.items = []
       state.discountPercent = 0
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(startCheckout.pending, (state) => {
+        state.checkoutStatus = 'loading'
+        state.checkoutError = null
+      })
+      .addCase(startCheckout.fulfilled, (state) => {
+        // Stay in loading: the browser is being redirected to Stripe Checkout.
+        state.checkoutStatus = 'loading'
+      })
+      .addCase(startCheckout.rejected, (state) => {
+        state.checkoutStatus = 'failed'
+        state.checkoutError =
+          'Le paiement est indisponible pour le moment. Réessayez dans un instant.'
+      })
   },
 })
 

@@ -8,6 +8,7 @@ import RegisterPage from './features/user/RegisterPage'
 import ProtectedRoute from './features/user/ProtectedRoute'
 import { Footer } from './components/organisms/Footer'
 import CartPage from './components/organisms/CartPage'
+import CheckoutSuccessPage from './components/organisms/CheckoutSuccessPage'
 import { useAppDispatch } from './store/hooks'
 import { fetchProducts } from './features/products/productsSlice'
 import { restoreSession } from './features/user/userSlice'
@@ -38,6 +39,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
           </Routes>
         </main>
         <Footer />

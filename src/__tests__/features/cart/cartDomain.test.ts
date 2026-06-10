@@ -175,4 +175,31 @@ describe('Cart Domain Logic', () => {
       expect(cartDomain.canCheckout(items)).toBe(true)
     })
   })
+
+  describe('toCheckoutPayload', () => {
+    it('should map items to id/quantity payload', () => {
+      const items: CartItem[] = [{ ...mockProduct, quantity: 2 }]
+      expect(cartDomain.toCheckoutPayload(items)).toEqual([
+        { id: mockProduct.id, quantity: 2, size: null, color: null },
+      ])
+    })
+
+    it('should carry selected size and color name', () => {
+      const items: CartItem[] = [
+        {
+          ...mockProduct,
+          quantity: 1,
+          selectedSize: 'M',
+          selectedColor: { name: 'Noir', hex: '#000000' },
+        },
+      ]
+      expect(cartDomain.toCheckoutPayload(items)).toEqual([
+        { id: mockProduct.id, quantity: 1, size: 'M', color: 'Noir' },
+      ])
+    })
+
+    it('should return an empty array for an empty cart', () => {
+      expect(cartDomain.toCheckoutPayload([])).toEqual([])
+    })
+  })
 })

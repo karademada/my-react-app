@@ -11,6 +11,8 @@ export interface ShoppingCartProps {
   onRemove: (id: number) => void
   onApplyDiscount: (discount: number) => void
   onClearCart: () => void
+  onCheckout?: () => void
+  checkingOut?: boolean
 }
 
 const fmt = (n: number) => '€ ' + Number(n).toFixed(2).replace('.', ',')
@@ -24,6 +26,8 @@ export const ShoppingCart = ({
   onRemove,
   onApplyDiscount,
   onClearCart,
+  onCheckout,
+  checkingOut = false,
 }: ShoppingCartProps) => {
   const count = items.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -103,7 +107,9 @@ export const ShoppingCart = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
-            <Button colorScheme="joy" size="md" uppercase fullWidth>Valider la commande</Button>
+            <Button colorScheme="joy" size="md" uppercase fullWidth onClick={onCheckout} disabled={checkingOut}>
+              {checkingOut ? 'Redirection…' : 'Valider la commande'}
+            </Button>
             <Button variant="ghost" size="sm" onClick={onClearCart} style={{ color: 'var(--text-muted)' }}>
               Vider le panier
             </Button>

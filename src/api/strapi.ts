@@ -1,4 +1,4 @@
-import type { Color, Product } from '../types'
+import type { CheckoutItemPayload, Color, Product } from '../types'
 
 const BASE_URL = import.meta.env.VITE_STRAPI_URL ?? 'http://localhost:1337'
 
@@ -119,4 +119,17 @@ export async function authMe(jwt: string): Promise<StrapiAuthUser> {
   })
   if (!res.ok) throw new Error(await parseAuthError(res))
   return (await res.json()) as StrapiAuthUser
+}
+
+export async function createCheckoutSession(
+  items: CheckoutItemPayload[],
+): Promise<string> {
+  const res = await fetch(`${BASE_URL}/api/orders/checkout-session`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items }),
+  })
+  if (!res.ok) throw new Error(await parseAuthError(res))
+  const json = (await res.json()) as { url: string }
+  return json.url
 }

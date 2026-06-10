@@ -14,3 +14,7 @@ export const selectFinalTotal = (state: RootState) => {
 }
 export const selectCanCheckout = (state: RootState) =>
   cartDomain.canCheckout(state.cart.items)
+export const selectCheckoutStatus = (state: RootState) =>
+  state.cart.checkoutStatus
+export const selectCheckoutError = (state: RootState) =>
+  state.cart.checkoutError

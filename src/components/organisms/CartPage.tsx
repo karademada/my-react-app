@@ -3,8 +3,14 @@ import {
   selectCartItems,
   selectCartTotal,
   selectCartItemCount,
+  selectCheckoutStatus,
+  selectCheckoutError,
 } from '../../features/cart/cartSelectors'
-import { removeFromCart, updateCartQuantity } from '../../features/cart/cartSlice'
+import {
+  removeFromCart,
+  updateCartQuantity,
+  startCheckout,
+} from '../../features/cart/cartSlice'
 import { Button } from '../atoms/Button'
 
 const fmt = (n: number) => '€ ' + Number(n).toFixed(2).replace('.', ',')
@@ -14,8 +20,13 @@ export const CartPage = () => {
   const items = useAppSelector(selectCartItems)
   const subtotal = useAppSelector(selectCartTotal)
   const count = useAppSelector(selectCartItemCount)
+  const checkoutStatus = useAppSelector(selectCheckoutStatus)
+  const checkoutError = useAppSelector(selectCheckoutError)
+  const checkingOut = checkoutStatus === 'loading'
   const shipping = subtotal > 60 || subtotal === 0 ? 0 : 6
   const total = subtotal + shipping
+
+  const handleCheckout = () => dispatch(startCheckout(items))
 
   if (items.length === 0) {
     return (
@@ -36,9 +47,14 @@ export const CartPage = () => {
           Livraison neutre en carbone et retours gratuits sur toutes les commandes.
         </p>
         <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginTop: 30 }}>
-          <Button colorScheme="ink" size="lg" style={{ minWidth: 240 }}>Paiement express</Button>
-          <Button colorScheme="joy" size="lg" uppercase style={{ minWidth: 240 }}>Valider la commande</Button>
+          <Button colorScheme="ink" size="lg" style={{ minWidth: 240 }} onClick={handleCheckout} disabled={checkingOut}>Paiement express</Button>
+          <Button colorScheme="joy" size="lg" uppercase style={{ minWidth: 240 }} onClick={handleCheckout} disabled={checkingOut}>
+            {checkingOut ? 'Redirection…' : 'Valider la commande'}
+          </Button>
         </div>
+        {checkoutError && (
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14.5, color: 'var(--joy-600)', marginTop: 18 }}>{checkoutError}</p>
+        )}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center', background: 'var(--joy-100)', borderRadius: 'var(--radius-lg)', padding: '14px 20px', maxWidth: 720, margin: '0 auto 48px' }}>
@@ -89,7 +105,9 @@ export const CartPage = () => {
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--ink-900)' }}>Total · {count} article{count > 1 ? 's' : ''}</span>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 600, color: 'var(--ink-900)' }}>{fmt(total)}</span>
         </div>
-        <Button colorScheme="joy" size="lg" uppercase fullWidth style={{ marginTop: 20 }}>Valider la commande</Button>
+        <Button colorScheme="joy" size="lg" uppercase fullWidth style={{ marginTop: 20 }} onClick={handleCheckout} disabled={checkingOut}>
+          {checkingOut ? 'Redirection…' : 'Valider la commande'}
+        </Button>
       </div>
     </div>
   )

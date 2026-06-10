@@ -45,6 +45,15 @@ export interface ProductFilters {
 export interface CartState {
   items: CartItem[]
   discountPercent: number
+  checkoutStatus: 'idle' | 'loading' | 'failed'
+  checkoutError: string | null
+}
+
+export interface CheckoutItemPayload {
+  id: number
+  quantity: number
+  size?: string | null
+  color?: string | null
 }
 
 export interface ProductsState {

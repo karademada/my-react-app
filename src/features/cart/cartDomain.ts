@@ -1,4 +1,4 @@
-import type { CartItem, Product } from '../../types'
+import type { CartItem, CheckoutItemPayload, Product } from '../../types'
 
 const getCartItemKey = (product: Product | CartItem): string => {
   const parts: (string | number)[] = [product.id]
@@ -45,6 +45,14 @@ const applyDiscount = (total: number, discountPercent: number): number =>
 
 const canCheckout = (items: CartItem[]): boolean => items.length > 0
 
+const toCheckoutPayload = (items: CartItem[]): CheckoutItemPayload[] =>
+  items.map((item) => ({
+    id: item.id,
+    quantity: item.quantity,
+    size: item.selectedSize ?? null,
+    color: item.selectedColor?.name ?? null,
+  }))
+
 export const cartDomain = {
   getCartItemKey,
   addItem,
@@ -54,4 +62,5 @@ export const cartDomain = {
   calculateItemCount,
   applyDiscount,
   canCheckout,
+  toCheckoutPayload,
 }
