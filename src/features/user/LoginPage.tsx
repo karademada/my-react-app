@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
-import { loginUser, clearAuthError } from './userSlice'
+import { clearAuthError } from './userSlice'
+import { useLoginMutation } from '../../api/apiSlice'
 import {
   selectAuthError,
   selectIsAuthLoading,
@@ -23,6 +24,7 @@ export default function LoginPage() {
   const loading = useAppSelector(selectIsAuthLoading)
   const serverError = useAppSelector(selectAuthError)
   const isAuthed = useAppSelector(selectIsAuthenticated)
+  const [login] = useLoginMutation()
 
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
@@ -52,7 +54,7 @@ export default function LoginPage() {
     e.preventDefault()
     setTouched(true)
     if (!formValid) return
-    dispatch(loginUser({ identifier: trimmed, password }))
+    login({ identifier: trimmed, password })
   }
 
   return (

@@ -1,8 +1,9 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { userDomain } from './userDomain'
-import { authLogin, authMe, authRegister } from '../../api/strapi'
-import type { StrapiAuthResponse, StrapiAuthUser } from '../../api/strapi'
+import { api } from '../../api/apiSlice'
+import { authMe } from '../../api/strapi'
+import type { StrapiAuthResponse, StrapiAuthUser, StrapiErrorBody } from '../../api/strapi'
 import type { User, UserState } from '../../types'
 
 const STORAGE_KEY = 'pk_auth_jwt'
@@ -11,17 +12,6 @@ interface LoginPayload {
   email: string
   token: string
   roles: string[]
-}
-
-interface LoginThunkArg {
-  identifier: string
-  password: string
-}
-
-interface RegisterThunkArg {
-  username: string
-  email: string
-  password: string
 }
 
 function persistJwt(jwt: string | null): void {
@@ -61,31 +51,14 @@ function fromMe(jwt: string, me: StrapiAuthUser): User {
   }
 }
 
-export const loginUser = createAsyncThunk<User, LoginThunkArg, { rejectValue: string }>(
-  'user/login',
-  async ({ identifier, password }, { rejectWithValue }) => {
-    try {
-      const res = await authLogin(identifier, password)
-      persistJwt(res.jwt)
-      return toUser(res)
-    } catch (e) {
-      return rejectWithValue(e instanceof Error ? e.message : 'Login failed')
-    }
-  },
-)
-
-export const registerUser = createAsyncThunk<User, RegisterThunkArg, { rejectValue: string }>(
-  'user/register',
-  async ({ username, email, password }, { rejectWithValue }) => {
-    try {
-      const res = await authRegister(username, email, password)
-      persistJwt(res.jwt)
-      return toUser(res)
-    } catch (e) {
-      return rejectWithValue(e instanceof Error ? e.message : 'Register failed')
-    }
-  },
-)
+function authErrorMessage(payload: unknown): string {
+  const data = (payload as { data?: StrapiErrorBody } | undefined)?.data
+  return (
+    data?.error?.details?.errors?.[0]?.message ??
+    data?.error?.message ??
+    'Authentication failed'
+  )
+}
 
 export const restoreSession = createAsyncThunk<User | null, void, { rejectValue: string }>(
   'user/restore',
@@ -144,34 +117,40 @@ export const userSlice = createSlice({
       state.status = 'loading'
       state.error = null
     }
-    const fulfilled = (state: UserState, action: PayloadAction<User | null>) => {
-      state.status = 'succeeded'
-      state.error = null
-      state.currentUser = action.payload
-    }
-    const rejected = (
-      state: UserState,
-      action: { payload?: string; error: { message?: string } },
-    ) => {
-      state.status = 'failed'
-      state.error = action.payload ?? action.error.message ?? 'Authentication failed'
-      state.currentUser = null
-    }
 
     builder
-      .addCase(loginUser.pending, pending)
-      .addCase(loginUser.fulfilled, fulfilled)
-      .addCase(loginUser.rejected, rejected)
-      .addCase(registerUser.pending, pending)
-      .addCase(registerUser.fulfilled, fulfilled)
-      .addCase(registerUser.rejected, rejected)
       .addCase(restoreSession.pending, pending)
-      .addCase(restoreSession.fulfilled, fulfilled)
+      .addCase(restoreSession.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        state.error = null
+        state.currentUser = action.payload
+      })
       .addCase(restoreSession.rejected, (state) => {
         state.status = 'idle'
         state.error = null
         state.currentUser = null
       })
+      .addMatcher(
+        isAnyOf(api.endpoints.login.matchPending, api.endpoints.register.matchPending),
+        pending,
+      )
+      .addMatcher(
+        isAnyOf(api.endpoints.login.matchFulfilled, api.endpoints.register.matchFulfilled),
+        (state, action) => {
+          persistJwt(action.payload.jwt)
+          state.status = 'succeeded'
+          state.error = null
+          state.currentUser = toUser(action.payload)
+        },
+      )
+      .addMatcher(
+        isAnyOf(api.endpoints.login.matchRejected, api.endpoints.register.matchRejected),
+        (state, action) => {
+          state.status = 'failed'
+          state.error = authErrorMessage(action.payload)
+          state.currentUser = null
+        },
+      )
   },
 })
 

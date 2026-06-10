@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
-import { registerUser, clearAuthError } from './userSlice'
+import { clearAuthError } from './userSlice'
+import { useRegisterMutation } from '../../api/apiSlice'
 import {
   selectAuthError,
   selectIsAuthLoading,
@@ -20,6 +21,7 @@ export default function RegisterPage() {
   const loading = useAppSelector(selectIsAuthLoading)
   const serverError = useAppSelector(selectAuthError)
   const isAuthed = useAppSelector(selectIsAuthenticated)
+  const [register] = useRegisterMutation()
 
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
@@ -50,13 +52,11 @@ export default function RegisterPage() {
     e.preventDefault()
     setTouched(true)
     if (!formValid) return
-    dispatch(
-      registerUser({
-        username: trimmedUser,
-        email: trimmedEmail,
-        password,
-      }),
-    )
+    register({
+      username: trimmedUser,
+      email: trimmedEmail,
+      password,
+    })
   }
 
   return (

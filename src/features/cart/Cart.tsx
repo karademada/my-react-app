@@ -5,16 +5,16 @@ import {
   selectCartTotal,
   selectFinalTotal,
   selectDiscountPercent,
-  selectCheckoutStatus,
 } from './cartSelectors'
 import {
   removeFromCart,
   updateCartQuantity,
   applyDiscount,
   clearCart,
-  startCheckout,
 } from './cartSlice'
+import { cartDomain } from './cartDomain'
 import { selectIsAuthenticated } from '../user/userSelectors'
+import { useCreateCheckoutSessionMutation } from '../../api/apiSlice'
 import { ShoppingCart } from '../../components/organisms/ShoppingCart'
 
 export default function Cart() {
@@ -23,16 +23,24 @@ export default function Cart() {
   const finalTotal = useAppSelector(selectFinalTotal)
   const discount = useAppSelector(selectDiscountPercent)
   const isAuthed = useAppSelector(selectIsAuthenticated)
-  const checkoutStatus = useAppSelector(selectCheckoutStatus)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const [createCheckoutSession, { isLoading: checkingOut }] =
+    useCreateCheckoutSessionMutation()
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!isAuthed) {
       navigate('/login', { state: { from: { pathname: '/cart' } } })
       return
     }
-    dispatch(startCheckout(items))
+    try {
+      const { url } = await createCheckoutSession(
+        cartDomain.toCheckoutPayload(items),
+      ).unwrap()
+      window.location.assign(url)
+    } catch {
+      // mutation state carries the error; the user can retry
+    }
   }
 
   return (
@@ -42,7 +50,7 @@ export default function Cart() {
       discount={discount}
       finalTotal={finalTotal}
       onCheckout={handleCheckout}
-      checkingOut={checkoutStatus === 'loading'}
+      checkingOut={checkingOut}
       onUpdateQuantity={(id, quantity) =>
         dispatch(updateCartQuantity({ productId: id, quantity }))
       }

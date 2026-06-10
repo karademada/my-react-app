@@ -10,14 +10,14 @@ import { Footer } from './components/organisms/Footer'
 import CartPage from './components/organisms/CartPage'
 import CheckoutSuccessPage from './components/organisms/CheckoutSuccessPage'
 import { useAppDispatch } from './store/hooks'
-import { fetchProducts } from './features/products/productsSlice'
+import { useGetProductsQuery } from './api/apiSlice'
 import { restoreSession } from './features/user/userSlice'
 
 function App() {
   const dispatch = useAppDispatch()
+  useGetProductsQuery()
 
   useEffect(() => {
-    dispatch(fetchProducts())
     dispatch(restoreSession())
   }, [dispatch])
 

@@ -3,14 +3,10 @@ import {
   selectCartItems,
   selectCartTotal,
   selectCartItemCount,
-  selectCheckoutStatus,
-  selectCheckoutError,
 } from '../../features/cart/cartSelectors'
-import {
-  removeFromCart,
-  updateCartQuantity,
-  startCheckout,
-} from '../../features/cart/cartSlice'
+import { removeFromCart, updateCartQuantity } from '../../features/cart/cartSlice'
+import { cartDomain } from '../../features/cart/cartDomain'
+import { useCreateCheckoutSessionMutation } from '../../api/apiSlice'
 import { Button } from '../atoms/Button'
 
 const fmt = (n: number) => '€ ' + Number(n).toFixed(2).replace('.', ',')
@@ -20,13 +16,21 @@ export const CartPage = () => {
   const items = useAppSelector(selectCartItems)
   const subtotal = useAppSelector(selectCartTotal)
   const count = useAppSelector(selectCartItemCount)
-  const checkoutStatus = useAppSelector(selectCheckoutStatus)
-  const checkoutError = useAppSelector(selectCheckoutError)
-  const checkingOut = checkoutStatus === 'loading'
+  const [createCheckoutSession, { isLoading: checkingOut, isError: checkoutFailed }] =
+    useCreateCheckoutSessionMutation()
   const shipping = subtotal > 60 || subtotal === 0 ? 0 : 6
   const total = subtotal + shipping
 
-  const handleCheckout = () => dispatch(startCheckout(items))
+  const handleCheckout = async () => {
+    try {
+      const { url } = await createCheckoutSession(
+        cartDomain.toCheckoutPayload(items),
+      ).unwrap()
+      window.location.assign(url)
+    } catch {
+      // mutation state carries the error; the user can retry
+    }
+  }
 
   if (items.length === 0) {
     return (
@@ -52,8 +56,10 @@ export const CartPage = () => {
             {checkingOut ? 'Redirection…' : 'Valider la commande'}
           </Button>
         </div>
-        {checkoutError && (
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14.5, color: 'var(--joy-600)', marginTop: 18 }}>{checkoutError}</p>
+        {checkoutFailed && (
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14.5, color: 'var(--joy-600)', marginTop: 18 }}>
+            Le paiement est indisponible pour le moment. Réessayez dans un instant.
+          </p>
         )}
       </div>
 

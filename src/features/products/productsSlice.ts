@@ -1,7 +1,7 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import type { PriceRange, Product, ProductsState } from '../../types'
-import { fetchProducts as apiFetchProducts } from '../../api/strapi'
+import type { PriceRange, ProductsState } from '../../types'
+import { api } from '../../api/apiSlice'
 
 const initialState: ProductsState = {
   items: [],
@@ -11,13 +11,6 @@ const initialState: ProductsState = {
     searchQuery: '',
   },
 }
-
-export const fetchProducts = createAsyncThunk<Product[]>(
-  'products/fetch',
-  async () => {
-    return apiFetchProducts()
-  },
-)
 
 export const productsSlice = createSlice({
   name: 'products',
@@ -37,9 +30,12 @@ export const productsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchProducts.fulfilled, (state, action) => {
-      state.items = action.payload
-    })
+    builder.addMatcher(
+      api.endpoints.getProducts.matchFulfilled,
+      (state, action) => {
+        state.items = action.payload
+      },
+    )
   },
 })
 

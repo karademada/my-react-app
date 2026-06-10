@@ -21,10 +21,9 @@ import userReducer, {
   clearAuthError,
   addLoyaltyPoints,
   redeemLoyaltyPoints,
-  loginUser,
-  registerUser,
   restoreSession,
 } from '../../../features/user/userSlice'
+import { api } from '../../../api/apiSlice'
 import type { UserState } from '../../../types'
 
 const initialState: UserState = {
@@ -37,7 +36,18 @@ const initialState: UserState = {
 const STORAGE_KEY = 'pk_auth_jwt'
 
 function makeStore() {
-  return configureStore({ reducer: { user: userReducer } })
+  return configureStore({
+    reducer: { user: userReducer, [api.reducerPath]: api.reducer },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(api.middleware),
+  })
+}
+
+function jsonResponse(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  })
 }
 
 describe('User Slice — sync reducers', () => {
@@ -133,10 +143,9 @@ describe('User Slice — async thunks', () => {
     vi.unstubAllGlobals()
   })
 
-  it('loginUser.fulfilled stores user, succeeded status, persists jwt', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
+  it('login mutation fulfilled stores user, succeeded status, persists jwt', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({
         jwt: 'jwt-token-xyz',
         user: {
           id: 1,
@@ -146,11 +155,14 @@ describe('User Slice — async thunks', () => {
           blocked: false,
         },
       }),
-    })
+    )
 
     const store = makeStore()
     await store.dispatch(
-      loginUser({ identifier: 'alice@example.com', password: 'password123' }),
+      api.endpoints.login.initiate({
+        identifier: 'alice@example.com',
+        password: 'password123',
+      }),
     )
 
     const state = store.getState().user
@@ -162,18 +174,17 @@ describe('User Slice — async thunks', () => {
     expect(window.localStorage.getItem(STORAGE_KEY)).toBe('jwt-token-xyz')
   })
 
-  it('loginUser.rejected sets failed status with Strapi error message', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: false,
-      status: 400,
-      json: async () => ({
-        error: { message: 'Invalid identifier or password' },
-      }),
-    })
+  it('login mutation rejected sets failed status with Strapi error message', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({ error: { message: 'Invalid identifier or password' } }, 400),
+    )
 
     const store = makeStore()
     await store.dispatch(
-      loginUser({ identifier: 'alice@example.com', password: 'wrong' }),
+      api.endpoints.login.initiate({
+        identifier: 'alice@example.com',
+        password: 'wrong',
+      }),
     )
 
     const state = store.getState().user
@@ -183,10 +194,9 @@ describe('User Slice — async thunks', () => {
     expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull()
   })
 
-  it('registerUser.fulfilled stores user and jwt', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
+  it('register mutation fulfilled stores user and jwt', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({
         jwt: 'new-jwt',
         user: {
           id: 2,
@@ -196,11 +206,11 @@ describe('User Slice — async thunks', () => {
           blocked: false,
         },
       }),
-    })
+    )
 
     const store = makeStore()
     await store.dispatch(
-      registerUser({
+      api.endpoints.register.initiate({
         username: 'bob',
         email: 'bob@example.com',
         password: 'password123',
