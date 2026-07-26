@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 export interface AuthLayoutProps {
   title: string
@@ -105,16 +105,3 @@ export const Field = ({ label, htmlFor, error, children }: FieldProps) => (
     )}
   </div>
 )
-
-export const inputStyle: CSSProperties = {
-  width: '100%',
-  fontFamily: 'var(--font-sans)',
-  fontSize: 14,
-  color: 'var(--ink-900)',
-  background: 'var(--bg-surface)',
-  border: '1px solid var(--line)',
-  borderRadius: 'var(--radius-md)',
-  padding: '10px 14px',
-  outline: 'none',
-  boxSizing: 'border-box',
-}
