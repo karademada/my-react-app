@@ -1,9 +1,60 @@
-const COLUMNS: { title: string; links: string[] }[] = [
-  { title: 'Maison', links: ['Notre histoire', 'Coopératives partenaires', 'Traçabilité', 'Engagement carbone'] },
-  { title: 'Boutique', links: ['Vanille & épices', 'Soins & savons', 'Apparel', 'Homeware'] },
-  { title: 'Service', links: ['Livraison', 'Retours gratuits', 'Contact', 'FAQ'] },
-  { title: 'Légal', links: ['Mentions légales', 'Confidentialité', 'CGV', 'Cookies'] },
+/**
+ * Entrée de plan du site. `href` absent = la page n'existe pas encore : l'entrée
+ * est alors rendue en texte inerte plutôt qu'en `<a href="#">`, qui serait
+ * annoncé comme lien, focusable au clavier, et ne ferait que remonter en haut
+ * de page au clic.
+ */
+interface FooterLink {
+  label: string
+  href?: string
+}
+
+const COLUMNS: { title: string; links: FooterLink[] }[] = [
+  {
+    title: 'Maison',
+    links: [
+      { label: 'Notre histoire' },
+      { label: 'Coopératives partenaires', href: '/partners' },
+      { label: 'Traçabilité' },
+      { label: 'Engagement carbone' },
+    ],
+  },
+  {
+    // `category` porte le slug Strapi, pas le libellé affiché : le catalogue
+    // filtre sur `product.category`, qui vaut `p.category.slug`.
+    title: 'Boutique',
+    links: [
+      { label: 'Vanille & épices', href: '/?category=vanille-epices' },
+      { label: 'Soins & savons', href: '/?category=soins-savons' },
+      { label: 'Apparel', href: '/?category=apparel' },
+      { label: 'Homeware', href: '/?category=homeware' },
+    ],
+  },
+  {
+    title: 'Service',
+    links: [
+      { label: 'Livraison' },
+      { label: 'Retours gratuits' },
+      { label: 'Contact' },
+      { label: 'FAQ' },
+    ],
+  },
+  {
+    title: 'Légal',
+    links: [
+      { label: 'Mentions légales' },
+      { label: 'Confidentialité' },
+      { label: 'CGV' },
+      { label: 'Cookies' },
+    ],
+  },
 ]
+
+const entryStyle = {
+  color: 'var(--paper-200)',
+  textDecoration: 'none',
+  fontSize: 14,
+} as const
 
 export const Footer = () => {
   const year = new Date().getFullYear()
@@ -67,18 +118,15 @@ export const Footer = () => {
               {col.title}
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {col.links.map((l) => (
-                <li key={l}>
-                  <a
-                    href="#"
-                    style={{
-                      color: 'var(--paper-200)',
-                      textDecoration: 'none',
-                      fontSize: 14,
-                    }}
-                  >
-                    {l}
-                  </a>
+              {col.links.map(({ label, href }) => (
+                <li key={label}>
+                  {href ? (
+                    <a href={href} style={entryStyle}>
+                      {label}
+                    </a>
+                  ) : (
+                    <span style={entryStyle}>{label}</span>
+                  )}
                 </li>
               ))}
             </ul>

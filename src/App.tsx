@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ProductList from './features/products/ProductList'
 import ProductDetailPage from './features/products/ProductDetailPage'
+import PartnersPage from './features/partners/PartnersPage'
+import PartnerDetailPage from './features/partners/PartnerDetailPage'
 import UserAuth from './features/user/UserAuth'
 import LoginPage from './features/user/LoginPage'
 import RegisterPage from './features/user/RegisterPage'
@@ -29,6 +31,8 @@ function App() {
           <Routes>
             <Route path="/" element={<ProductList />} />
             <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route path="/partners" element={<PartnersPage />} />
+            <Route path="/partners/:slug" element={<PartnerDetailPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route

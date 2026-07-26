@@ -17,13 +17,18 @@ export const ProductList = ({
   const gridRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const cards = gridRef.current?.children
-    if (cards) {
-      gsap.fromTo(
-        cards,
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out' },
-      )
+    // HTMLCollection vide reste truthy : tester la longueur, sinon GSAP
+    // reçoit 0 cible et log "GSAP target ... not found" sur liste vide.
+    const cards = gridRef.current ? Array.from(gridRef.current.children) : []
+    if (cards.length === 0) return
+
+    const tween = gsap.fromTo(
+      cards,
+      { opacity: 0, y: 24 },
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out' },
+    )
+    return () => {
+      tween.kill()
     }
   }, [products])
 

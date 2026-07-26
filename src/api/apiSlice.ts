@@ -19,9 +19,19 @@ export interface RegisterRequest {
   password: string
 }
 
+/** Minimal shape of the root state this slice reads — avoids a circular import on `RootState`. */
+type StateWithUser = { user: { currentUser: { token: string | null } | null } }
+
 export const api = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: `${BASE_URL}/api/` }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${BASE_URL}/api/`,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as StateWithUser).user.currentUser?.token
+      if (token) headers.set('Authorization', `Bearer ${token}`)
+      return headers
+    },
+  }),
   tagTypes: ['Products'],
   endpoints: (builder) => ({
     getProducts: builder.query<Product[], void>({

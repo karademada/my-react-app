@@ -11,7 +11,8 @@ import {
 } from './userSelectors'
 import { userDomain } from './userDomain'
 import { Button } from '../../components/atoms/Button'
-import { AuthLayout, Field, inputStyle } from './AuthLayout'
+import { AuthLayout, Field } from './AuthLayout'
+import { inputStyle } from './authStyles'
 
 interface LocationState {
   from?: { pathname: string }

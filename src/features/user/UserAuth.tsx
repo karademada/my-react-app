@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import {
   selectCurrentUser,
@@ -15,8 +16,13 @@ import { logout } from './userSlice'
 import { Header } from '../../components/organisms/Header'
 import Cart from '../cart/Cart'
 
+const CATALOG_PATH = '/'
+
 export default function UserAuth() {
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [params, setParams] = useSearchParams()
+  const location = useLocation()
+  const navigate = useNavigate()
   const currentUser = useAppSelector(selectCurrentUser)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const loyaltyPoints = useAppSelector(selectLoyaltyPoints)
@@ -33,6 +39,31 @@ export default function UserAuth() {
     ),
   ]
 
+  /**
+   * `?category=` fait foi, Redux suit. Sens unique : la sélection reste
+   * partageable, revient au retour arrière, et sera indexable au SSR — même
+   * convention que PartnersPage. Le store reste ce que lisent les sélecteurs,
+   * il n'est jamais écrit directement par le Header.
+   */
+  const urlCategory = params.get('category')
+
+  useEffect(() => {
+    dispatch(setCategory(urlCategory))
+  }, [dispatch, urlCategory])
+
+  const handleCategoryChange = (category: string | null) => {
+    const onCatalog = location.pathname === CATALOG_PATH
+    // Depuis une autre route, repartir d'une query vierge : les filtres de
+    // /partners n'ont aucun sens sur le catalogue.
+    const next = new URLSearchParams(onCatalog ? params : undefined)
+
+    if (category) next.set('category', category)
+    else next.delete('category')
+
+    if (onCatalog) setParams(next, { preventScrollReset: true })
+    else navigate({ pathname: CATALOG_PATH, search: next.toString() })
+  }
+
   return (
     <Header
       isAuthenticated={isAuthenticated}
@@ -46,7 +77,7 @@ export default function UserAuth() {
       onLogout={() => dispatch(logout())}
       onCartToggle={() => setIsCartOpen(!isCartOpen)}
       onSearchChange={(query) => dispatch(setSearchQuery(query))}
-      onCategoryChange={(category) => dispatch(setCategory(category))}
+      onCategoryChange={handleCategoryChange}
       cartContent={<Cart />}
     />
   )

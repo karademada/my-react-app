@@ -61,18 +61,30 @@ export const Header = ({
   const backdropRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (isCartOpen) {
-      gsap.fromTo(
-        cartRef.current,
-        { x: 400, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.24, ease: 'power2.out' },
-      )
-      gsap.fromTo(
-        backdropRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.24 },
+    if (!isCartOpen) return
+
+    // Refs nulles si le panier n'est pas encore monté : GSAP loggerait
+    // "GSAP target not found" sur une cible vide.
+    const cart = cartRef.current
+    const backdrop = backdropRef.current
+    const tweens: gsap.core.Tween[] = []
+
+    if (cart) {
+      tweens.push(
+        gsap.fromTo(
+          cart,
+          { x: 400, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.24, ease: 'power2.out' },
+        ),
       )
     }
+    if (backdrop) {
+      tweens.push(
+        gsap.fromTo(backdrop, { opacity: 0 }, { opacity: 1, duration: 0.24 }),
+      )
+    }
+
+    return () => tweens.forEach((tween) => tween.kill())
   }, [isCartOpen])
 
   return (
@@ -270,8 +282,24 @@ export const Header = ({
                 {cat}
               </span>
             ))}
+            {/* Lien de route, pas un filtre : repoussé à droite pour ne pas se
+                lire comme une catégorie de plus. <a> comme les autres liens de
+                ce Header, qui ne connaît pas le router. */}
+            <a
+              href="/partners"
+              style={{
+                marginLeft: 'auto',
+                color: 'var(--text-muted)',
+                fontWeight: 500,
+                textDecoration: 'none',
+                borderBottom: '2px solid transparent',
+                paddingBottom: 2,
+              }}
+            >
+              Partenaires
+            </a>
             {isAuthenticated && (
-              <span style={{ marginLeft: 'auto', color: 'var(--moss-700)' }}>
+              <span style={{ color: 'var(--moss-700)' }}>
                 Fidélité · {loyaltyPoints} pts
               </span>
             )}
