@@ -282,8 +282,24 @@ export const Header = ({
                 {cat}
               </span>
             ))}
+            {/* Lien de route, pas un filtre : repoussé à droite pour ne pas se
+                lire comme une catégorie de plus. <a> comme les autres liens de
+                ce Header, qui ne connaît pas le router. */}
+            <a
+              href="/partners"
+              style={{
+                marginLeft: 'auto',
+                color: 'var(--text-muted)',
+                fontWeight: 500,
+                textDecoration: 'none',
+                borderBottom: '2px solid transparent',
+                paddingBottom: 2,
+              }}
+            >
+              Partenaires
+            </a>
             {isAuthenticated && (
-              <span style={{ marginLeft: 'auto', color: 'var(--moss-700)' }}>
+              <span style={{ color: 'var(--moss-700)' }}>
                 Fidélité · {loyaltyPoints} pts
               </span>
             )}

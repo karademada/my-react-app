@@ -52,7 +52,7 @@ Frontend : `typecheck`, `build`, `lint` et les 16 tests de domaine passent.
 
 ## Reste à faire
 
-- Lien `/partners` dans le `Header` — la section n'est pas encore atteignable
+- ~~Lien `/partners` dans le `Header`~~ — fait, aligné à droite de la barre de navigation
 - Stories pour `PartnerList` et `PartnerDetail`
 - Bloc « Cultivé par » sur `ProductDetailPage` (hook `useGetPartnersByProductIdQuery` prêt)
 - Upload des portraits dans le Media Library
