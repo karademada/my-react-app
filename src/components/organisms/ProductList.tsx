@@ -27,7 +27,9 @@ export const ProductList = ({
       { opacity: 0, y: 24 },
       { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out' },
     )
-    return () => tween.kill()
+    return () => {
+      tween.kill()
+    }
   }, [products])
 
   return (
