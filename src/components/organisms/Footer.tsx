@@ -24,10 +24,10 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     // filtre sur `product.category`, qui vaut `p.category.slug`.
     title: 'Boutique',
     links: [
-      { label: 'Vanille & épices', href: '/?category=vanille-epices' },
-      { label: 'Soins & savons', href: '/?category=soins-savons' },
+      { label: 'Vanille', href: '/?category=vanille' },
+      { label: 'Huiles essentielles', href: '/?category=huiles-essentielles' },
+      { label: 'Miel', href: '/?category=miel' },
       { label: 'Apparel', href: '/?category=apparel' },
-      { label: 'Homeware', href: '/?category=homeware' },
     ],
   },
   {
