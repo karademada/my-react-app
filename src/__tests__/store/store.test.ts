@@ -21,8 +21,19 @@ describe('Redux Store', () => {
     expect(state.user.loyaltyPoints).toBe(0)
   })
 
-  it('should have initial products', () => {
+  it('should start with no products — they are fetched via RTK Query', () => {
     const state = store.getState()
-    expect(state.products.items.length).toBeGreaterThan(0)
+    expect(state.products.items).toEqual([])
+  })
+
+  it('should have default product filters', () => {
+    const state = store.getState()
+    expect(state.products.filters.category).toBeNull()
+    expect(state.products.filters.searchQuery).toBe('')
+  })
+
+  it('should register the RTK Query api reducer', () => {
+    const state = store.getState()
+    expect(state).toHaveProperty('api')
   })
 })
