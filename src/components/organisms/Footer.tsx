@@ -20,12 +20,14 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     ],
   },
   {
+    // `category` porte le slug Strapi, pas le libellé affiché : le catalogue
+    // filtre sur `product.category`, qui vaut `p.category.slug`.
     title: 'Boutique',
     links: [
-      { label: 'Vanille & épices' },
-      { label: 'Soins & savons' },
-      { label: 'Apparel' },
-      { label: 'Homeware' },
+      { label: 'Vanille & épices', href: '/?category=vanille-epices' },
+      { label: 'Soins & savons', href: '/?category=soins-savons' },
+      { label: 'Apparel', href: '/?category=apparel' },
+      { label: 'Homeware', href: '/?category=homeware' },
     ],
   },
   {
