@@ -27,7 +27,10 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'Vanille', href: '/?category=vanille' },
       { label: 'Huiles essentielles', href: '/?category=huiles-essentielles' },
       { label: 'Miel', href: '/?category=miel' },
-      { label: 'Apparel', href: '/?category=apparel' },
+      // Le catalogue de démonstration a été retiré : plus aucun produit en
+      // apparel. Entrée laissée inerte plutôt que pointée sur une catégorie
+      // vide — la marque annonce toujours de l'apparel durable.
+      { label: 'Apparel' },
     ],
   },
   {
