@@ -93,7 +93,7 @@ describe('Cart Domain Logic', () => {
   describe('removeItem', () => {
     it('should remove item from cart', () => {
       const items: CartItem[] = [{ ...mockProduct, cartKey: '1', quantity: 1 }]
-      const result = cartDomain.removeItem(items, 1)
+      const result = cartDomain.removeItem(items, '1')
       expect(result).toEqual([])
     })
 
@@ -102,23 +102,44 @@ describe('Cart Domain Logic', () => {
         { ...mockProduct, cartKey: '1', quantity: 1 },
         { ...mockProduct2, cartKey: '2', quantity: 1 },
       ]
-      const result = cartDomain.removeItem(items, 1)
+      const result = cartDomain.removeItem(items, '1')
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe(2)
+    })
+
+    it('should remove only the matching variant of a product', () => {
+      const items: CartItem[] = [
+        { ...mockProduct, selectedSize: 'M', cartKey: '1-M', quantity: 1 },
+        { ...mockProduct, selectedSize: 'L', cartKey: '1-L', quantity: 1 },
+      ]
+      const result = cartDomain.removeItem(items, '1-M')
+      expect(result).toHaveLength(1)
+      expect(result[0].selectedSize).toBe('L')
     })
   })
 
   describe('updateQuantity', () => {
     it('should update item quantity', () => {
-      const items: CartItem[] = [{ ...mockProduct, quantity: 1 }]
-      const result = cartDomain.updateQuantity(items, 1, 5)
+      const items: CartItem[] = [{ ...mockProduct, cartKey: '1', quantity: 1 }]
+      const result = cartDomain.updateQuantity(items, '1', 5)
       expect(result[0].quantity).toBe(5)
     })
 
     it('should remove item if quantity is 0', () => {
-      const items: CartItem[] = [{ ...mockProduct, quantity: 1 }]
-      const result = cartDomain.updateQuantity(items, 1, 0)
+      const items: CartItem[] = [{ ...mockProduct, cartKey: '1', quantity: 1 }]
+      const result = cartDomain.updateQuantity(items, '1', 0)
       expect(result).toEqual([])
+    })
+
+    it('should update only the matching variant', () => {
+      const items: CartItem[] = [
+        { ...mockProduct, selectedSize: 'M', cartKey: '1-M', quantity: 1 },
+        { ...mockProduct, selectedSize: 'L', cartKey: '1-L', quantity: 1 },
+      ]
+      const result = cartDomain.updateQuantity(items, '1-L', 3)
+      expect(result).toHaveLength(2)
+      expect(result.find((i) => i.selectedSize === 'L')?.quantity).toBe(3)
+      expect(result.find((i) => i.selectedSize === 'M')?.quantity).toBe(1)
     })
   })
 
@@ -162,6 +183,14 @@ describe('Cart Domain Logic', () => {
 
     it('should handle 0 discount', () => {
       expect(cartDomain.applyDiscount(100, 0)).toBe(100)
+    })
+
+    it('should clamp negative discount to 0', () => {
+      expect(cartDomain.applyDiscount(100, -25)).toBe(100)
+    })
+
+    it('should clamp discount above 100 to 100', () => {
+      expect(cartDomain.applyDiscount(100, 150)).toBe(0)
     })
   })
 

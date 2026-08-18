@@ -2,13 +2,17 @@ import type { CartItem as CartItemType } from '../../types'
 
 export interface CartItemProps {
   item: CartItemType
-  onUpdateQuantity: (id: number, quantity: number) => void
-  onRemove: (id: number) => void
+  onUpdateQuantity: (cartKey: string, quantity: number) => void
+  onRemove: (cartKey: string) => void
 }
 
 const fmt = (n: number) => '€ ' + Number(n).toFixed(2).replace('.', ',')
 
 export const CartItem = ({ item, onUpdateQuantity, onRemove }: CartItemProps) => {
+  // `cartKey` identifies the exact variant (id + size + color). All real
+  // cart items carry one (set by cartDomain.addItem); fall back to the id
+  // for hand-built fixtures.
+  const cartKey = item.cartKey ?? String(item.id)
   return (
     <div
       style={{
@@ -82,7 +86,7 @@ export const CartItem = ({ item, onUpdateQuantity, onRemove }: CartItemProps) =>
         <input
           type="number"
           value={item.quantity}
-          onChange={(e) => onUpdateQuantity(item.id, parseInt(e.target.value, 10) || 0)}
+          onChange={(e) => onUpdateQuantity(cartKey, parseInt(e.target.value, 10) || 0)}
           min={0}
           style={{
             width: 64,
@@ -99,7 +103,7 @@ export const CartItem = ({ item, onUpdateQuantity, onRemove }: CartItemProps) =>
           }}
         />
         <button
-          onClick={() => onRemove(item.id)}
+          onClick={() => onRemove(cartKey)}
           style={{
             background: 'none',
             border: 'none',

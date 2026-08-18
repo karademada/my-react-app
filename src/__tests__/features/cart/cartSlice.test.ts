@@ -64,21 +64,34 @@ describe('Cart Slice', () => {
 
   it('should handle removeFromCart', () => {
     const state: CartState = {
-      items: [{ ...mockProduct, quantity: 1 }],
+      items: [{ ...mockProduct, cartKey: '1', quantity: 1 }],
       discountPercent: 0,
     }
-    const newState = cartReducer(state, removeFromCart(1))
+    const newState = cartReducer(state, removeFromCart('1'))
     expect(newState.items).toHaveLength(0)
+  })
+
+  it('should remove only the matching variant', () => {
+    const state: CartState = {
+      items: [
+        { ...mockProduct, selectedSize: 'M', cartKey: '1-M', quantity: 1 },
+        { ...mockProduct, selectedSize: 'L', cartKey: '1-L', quantity: 1 },
+      ],
+      discountPercent: 0,
+    }
+    const newState = cartReducer(state, removeFromCart('1-M'))
+    expect(newState.items).toHaveLength(1)
+    expect(newState.items[0].selectedSize).toBe('L')
   })
 
   it('should handle updateCartQuantity', () => {
     const state: CartState = {
-      items: [{ ...mockProduct, quantity: 1 }],
+      items: [{ ...mockProduct, cartKey: '1', quantity: 1 }],
       discountPercent: 0,
     }
     const newState = cartReducer(
       state,
-      updateCartQuantity({ productId: 1, quantity: 5 }),
+      updateCartQuantity({ cartKey: '1', quantity: 5 }),
     )
     expect(newState.items[0].quantity).toBe(5)
   })

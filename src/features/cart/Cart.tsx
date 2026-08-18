@@ -25,8 +25,12 @@ export default function Cart() {
   const isAuthed = useAppSelector(selectIsAuthenticated)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const [createCheckoutSession, { isLoading: checkingOut }] =
+  const [createCheckoutSession, { isLoading: checkingOut, isError }] =
     useCreateCheckoutSessionMutation()
+
+  const checkoutError = isError
+    ? 'Le paiement est indisponible pour le moment. Vérifiez votre session et réessayez.'
+    : null
 
   const handleCheckout = async () => {
     if (!isAuthed) {
@@ -51,10 +55,11 @@ export default function Cart() {
       finalTotal={finalTotal}
       onCheckout={handleCheckout}
       checkingOut={checkingOut}
-      onUpdateQuantity={(id, quantity) =>
-        dispatch(updateCartQuantity({ productId: id, quantity }))
+      error={checkoutError}
+      onUpdateQuantity={(cartKey, quantity) =>
+        dispatch(updateCartQuantity({ cartKey, quantity }))
       }
-      onRemove={(id) => dispatch(removeFromCart(id))}
+      onRemove={(cartKey) => dispatch(removeFromCart(cartKey))}
       onApplyDiscount={(d) => dispatch(applyDiscount(d))}
       onClearCart={() => dispatch(clearCart())}
     />

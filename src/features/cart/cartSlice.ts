@@ -19,15 +19,15 @@ export const cartSlice = createSlice({
       const { product, quantity } = action.payload
       state.items = cartDomain.addItem(state.items, product, quantity)
     },
-    removeFromCart: (state, action: PayloadAction<number>) => {
+    removeFromCart: (state, action: PayloadAction<string>) => {
       state.items = cartDomain.removeItem(state.items, action.payload)
     },
     updateCartQuantity: (
       state,
-      action: PayloadAction<{ productId: number; quantity: number }>,
+      action: PayloadAction<{ cartKey: string; quantity: number }>,
     ) => {
-      const { productId, quantity } = action.payload
-      state.items = cartDomain.updateQuantity(state.items, productId, quantity)
+      const { cartKey, quantity } = action.payload
+      state.items = cartDomain.updateQuantity(state.items, cartKey, quantity)
     },
     applyDiscount: (state, action: PayloadAction<number>) => {
       state.discountPercent = action.payload

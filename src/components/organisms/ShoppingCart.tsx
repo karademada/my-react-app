@@ -7,15 +7,18 @@ export interface ShoppingCartProps {
   total: number
   discount: number
   finalTotal: number
-  onUpdateQuantity: (id: number, quantity: number) => void
-  onRemove: (id: number) => void
+  onUpdateQuantity: (cartKey: string, quantity: number) => void
+  onRemove: (cartKey: string) => void
   onApplyDiscount: (discount: number) => void
   onClearCart: () => void
   onCheckout?: () => void
   checkingOut?: boolean
+  error?: string | null
 }
 
 const fmt = (n: number) => '€ ' + Number(n).toFixed(2).replace('.', ',')
+
+const keyOf = (item: CartItemType): string => item.cartKey ?? String(item.id)
 
 export const ShoppingCart = ({
   items,
@@ -28,6 +31,7 @@ export const ShoppingCart = ({
   onClearCart,
   onCheckout,
   checkingOut = false,
+  error = null,
 }: ShoppingCartProps) => {
   const count = items.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -53,7 +57,7 @@ export const ShoppingCart = ({
         ) : (
           items.map((item) => (
             <CartItem
-              key={item.id}
+              key={keyOf(item)}
               item={item}
               onUpdateQuantity={onUpdateQuantity}
               onRemove={onRemove}
@@ -76,8 +80,14 @@ export const ShoppingCart = ({
             <input
               type="number"
               placeholder="0"
+              min={0}
+              max={100}
               value={discount}
-              onChange={(e) => onApplyDiscount(parseInt(e.target.value, 10) || 0)}
+              onChange={(e) =>
+                onApplyDiscount(
+                  Math.min(100, Math.max(0, parseInt(e.target.value, 10) || 0)),
+                )
+              }
               style={{
                 width: 80,
                 fontFamily: 'var(--font-mono)',
@@ -107,6 +117,20 @@ export const ShoppingCart = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
+            {error && (
+              <div
+                role="alert"
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: 'var(--radius-md)',
+                  background: '#fbe9e2',
+                  color: '#8b3517',
+                  fontSize: 13,
+                }}
+              >
+                {error}
+              </div>
+            )}
             <Button colorScheme="joy" size="md" uppercase fullWidth onClick={onCheckout} disabled={checkingOut}>
               {checkingOut ? 'Redirection…' : 'Valider la commande'}
             </Button>

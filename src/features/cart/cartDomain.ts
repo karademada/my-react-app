@@ -8,29 +8,33 @@ const getCartItemKey = (product: Product | CartItem): string => {
 }
 
 const addItem = (items: CartItem[], product: Product, quantity = 1): CartItem[] => {
+  const qty = Math.max(1, Math.floor(quantity))
   const cartKey = getCartItemKey(product)
   const existing = items.find((item) => getCartItemKey(item) === cartKey)
   if (existing) {
     return items.map((item) =>
       getCartItemKey(item) === cartKey
-        ? { ...item, quantity: item.quantity + quantity }
+        ? { ...item, quantity: item.quantity + qty }
         : item,
     )
   }
-  return [...items, { ...product, cartKey, quantity }]
+  return [...items, { ...product, cartKey, quantity: qty }]
 }
 
-const removeItem = (items: CartItem[], productId: number): CartItem[] =>
-  items.filter((item) => item.id !== productId)
+// Variants of the same product share the same `id` but have distinct
+// `cartKey` values (id + size + color). Removal and quantity updates must
+// key on `cartKey` — keying on `id` alone would mutate/remove every variant.
+const removeItem = (items: CartItem[], cartKey: string): CartItem[] =>
+  items.filter((item) => getCartItemKey(item) !== cartKey)
 
 const updateQuantity = (
   items: CartItem[],
-  productId: number,
+  cartKey: string,
   quantity: number,
 ): CartItem[] => {
-  if (quantity <= 0) return removeItem(items, productId)
+  if (quantity <= 0) return removeItem(items, cartKey)
   return items.map((item) =>
-    item.id === productId ? { ...item, quantity } : item,
+    getCartItemKey(item) === cartKey ? { ...item, quantity } : item,
   )
 }
 
@@ -40,8 +44,11 @@ const calculateTotal = (items: CartItem[]): number =>
 const calculateItemCount = (items: CartItem[]): number =>
   items.reduce((sum, item) => sum + item.quantity, 0)
 
+const clampDiscount = (discountPercent: number): number =>
+  Math.min(100, Math.max(0, discountPercent))
+
 const applyDiscount = (total: number, discountPercent: number): number =>
-  total * (1 - discountPercent / 100)
+  total * (1 - clampDiscount(discountPercent) / 100)
 
 const canCheckout = (items: CartItem[]): boolean => items.length > 0
 

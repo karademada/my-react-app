@@ -3,23 +3,30 @@ import {
   selectCartItems,
   selectCartTotal,
   selectCartItemCount,
+  selectDiscountPercent,
+  selectFinalTotal,
 } from '../../features/cart/cartSelectors'
 import { removeFromCart, updateCartQuantity } from '../../features/cart/cartSlice'
 import { cartDomain } from '../../features/cart/cartDomain'
 import { useCreateCheckoutSessionMutation } from '../../api/apiSlice'
 import { Button } from '../atoms/Button'
+import type { CartItem as CartItemType } from '../../types'
 
 const fmt = (n: number) => '€ ' + Number(n).toFixed(2).replace('.', ',')
+
+const keyOf = (item: CartItemType): string => item.cartKey ?? String(item.id)
 
 export const CartPage = () => {
   const dispatch = useAppDispatch()
   const items = useAppSelector(selectCartItems)
   const subtotal = useAppSelector(selectCartTotal)
   const count = useAppSelector(selectCartItemCount)
+  const discount = useAppSelector(selectDiscountPercent)
+  const finalTotal = useAppSelector(selectFinalTotal)
   const [createCheckoutSession, { isLoading: checkingOut, isError: checkoutFailed }] =
     useCreateCheckoutSessionMutation()
   const shipping = subtotal > 60 || subtotal === 0 ? 0 : 6
-  const total = subtotal + shipping
+  const total = finalTotal + shipping
 
   const handleCheckout = async () => {
     try {
@@ -73,7 +80,7 @@ export const CartPage = () => {
 
       <div style={{ borderTop: '1px solid var(--line)' }}>
         {items.map((it) => (
-          <div key={it.id} style={{ display: 'grid', gridTemplateColumns: '120px 1fr auto auto', gap: 28, alignItems: 'start', padding: '32px 0', borderBottom: '1px solid var(--line)' }}>
+          <div key={keyOf(it)} style={{ display: 'grid', gridTemplateColumns: '120px 1fr auto auto', gap: 28, alignItems: 'start', padding: '32px 0', borderBottom: '1px solid var(--line)' }}>
             <div style={{ aspectRatio: '1 / 1', borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: 'var(--paper-200)' }}>
               {it.image && <img src={it.image} alt={it.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
             </div>
@@ -84,7 +91,7 @@ export const CartPage = () => {
             </div>
             <select
               value={it.quantity}
-              onChange={(e) => dispatch(updateCartQuantity({ productId: it.id, quantity: Number(e.target.value) }))}
+              onChange={(e) => dispatch(updateCartQuantity({ cartKey: keyOf(it), quantity: Number(e.target.value) }))}
               style={{ fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 600, color: 'var(--ink-900)', background: 'var(--bg-surface)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '9px 14px', cursor: 'pointer' }}
             >
               {Array.from({ length: 9 }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n}</option>)}
@@ -92,7 +99,7 @@ export const CartPage = () => {
             <div style={{ textAlign: 'right', minWidth: 120 }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 19, fontWeight: 600, color: 'var(--ink-900)' }}>{fmt(it.price * it.quantity)}</div>
               <button
-                onClick={() => dispatch(removeFromCart(it.id))}
+                onClick={() => dispatch(removeFromCart(keyOf(it)))}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 12, fontFamily: 'var(--font-sans)', fontSize: 13.5, color: 'var(--joy-600)', textDecoration: 'underline', textUnderlineOffset: 3 }}
               >Supprimer</button>
             </div>
@@ -104,6 +111,11 @@ export const CartPage = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--text-muted)' }}>
           <span>Sous-total</span><span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-body)' }}>{fmt(subtotal)}</span>
         </div>
+        {discount > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--text-muted)' }}>
+            <span>Remise ({discount} %)</span><span style={{ fontFamily: 'var(--font-mono)', color: 'var(--bio)' }}>−{fmt(subtotal - finalTotal)}</span>
+          </div>
+        )}
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--text-muted)' }}>
           <span>Livraison</span><span style={{ fontFamily: 'var(--font-mono)', color: shipping === 0 ? 'var(--bio)' : 'var(--text-body)' }}>{shipping === 0 ? 'Offerte' : fmt(shipping)}</span>
         </div>
