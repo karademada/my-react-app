@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import type { User } from '../../types'
 
@@ -21,8 +22,8 @@ export interface HeaderProps {
 }
 
 const Wordmark = () => (
-  <a
-    href="/"
+  <Link
+    to="/"
     style={{
       fontFamily: 'var(--font-display)',
       fontWeight: 700,
@@ -38,7 +39,7 @@ const Wordmark = () => (
     place
     <span style={{ color: 'var(--moss-600)', padding: '0 1px' }}>·</span>
     kabar
-  </a>
+  </Link>
 )
 
 export const Header = ({
@@ -160,8 +161,8 @@ export const Header = ({
               </div>
             ) : (
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <a
-                  href="/register"
+                <Link
+                  to="/register"
                   style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: 13,
@@ -171,9 +172,9 @@ export const Header = ({
                   }}
                 >
                   Inscription
-                </a>
-                <a
-                  href="/login"
+                </Link>
+                <Link
+                  to="/login"
                   onClick={onLogin}
                   style={{
                     display: 'inline-flex',
@@ -193,7 +194,7 @@ export const Header = ({
                   }}
                 >
                   Connexion
-                </a>
+                </Link>
               </div>
             )}
 

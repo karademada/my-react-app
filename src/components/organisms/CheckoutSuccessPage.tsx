@@ -1,14 +1,19 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useAppDispatch } from '../../store/hooks'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
+import { selectCartItems } from '../../features/cart/cartSelectors'
 import { clearCart } from '../../features/cart/cartSlice'
 
 export const CheckoutSuccessPage = () => {
   const dispatch = useAppDispatch()
+  const hasItems = useAppSelector((state) => selectCartItems(state).length > 0)
 
+  // Clear the cart once, after a real checkout. Skipping when the cart is
+  // already empty keeps a plain refresh (or a visit without paying) from
+  // wiping anything.
   useEffect(() => {
-    dispatch(clearCart())
-  }, [dispatch])
+    if (hasItems) dispatch(clearCart())
+  }, [dispatch, hasItems])
 
   return (
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '120px 24px', textAlign: 'center' }}>

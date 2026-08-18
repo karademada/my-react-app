@@ -11,11 +11,12 @@ export interface ProductDetailSelection {
 export interface ProductDetailProps {
   product: Product
   onAddToCart: (payload: Product & ProductDetailSelection) => void
+  onBuyNow?: (payload: Product & ProductDetailSelection) => void
 }
 
 const fmt = (n: number) => '€ ' + Number(n).toFixed(2).replace('.', ',')
 
-export const ProductDetail = ({ product, onAddToCart }: ProductDetailProps) => {
+export const ProductDetail = ({ product, onAddToCart, onBuyNow }: ProductDetailProps) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(product.sizes?.[0] ?? null)
   const [selectedColor, setSelectedColor] = useState<Color | null>(product.colors?.[0] ?? null)
   const [quantity, setQuantity] = useState(1)
@@ -24,6 +25,10 @@ export const ProductDetail = ({ product, onAddToCart }: ProductDetailProps) => {
 
   const handleAddToCart = () => {
     onAddToCart({ ...product, selectedSize, selectedColor, quantity })
+  }
+
+  const handleBuyNow = () => {
+    onBuyNow?.({ ...product, selectedSize, selectedColor, quantity })
   }
 
   return (
@@ -287,7 +292,7 @@ export const ProductDetail = ({ product, onAddToCart }: ProductDetailProps) => {
           >
             {soldOut ? 'Épuisé' : 'Ajouter au panier'}
           </Button>
-          <Button colorScheme="joy" size="lg" uppercase disabled={soldOut} onClick={handleAddToCart}>
+          <Button colorScheme="joy" size="lg" uppercase disabled={soldOut} onClick={handleBuyNow}>
             Acheter maintenant
           </Button>
         </div>
