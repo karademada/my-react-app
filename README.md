@@ -13,7 +13,7 @@ paiement Stripe Checkout via un backend Strapi.
   (`src/theme/placekabar-tokens.css`)
 - **GSAP** (animations header / grille produits)
 - **Vitest 4** (unit + Storybook en browser Playwright) + Storybook 10
-- Déploiement : **Vercel** (SPA + fonctions serverless `api/` pour le bot Slack ops)
+- Déploiement : **Vercel** (SPA)
 
 ## Commandes
 
