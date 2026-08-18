@@ -4,7 +4,6 @@ import { selectAllProducts } from './productsSelectors'
 import { addToCart } from '../cart/cartSlice'
 import { useGetProductsQuery } from '../../api/apiSlice'
 import { ProductDetail } from '../../components/organisms/ProductDetail'
-import { RouteSkeleton } from '../../components/molecules/RouteSkeleton'
 import type { Color, Product } from '../../types'
 
 interface ProductSelection {
@@ -50,7 +49,25 @@ export default function ProductDetailPage() {
   }
 
   if (!product) {
-    if (isLoading) return <RouteSkeleton />
+    if (isLoading) {
+      return (
+        <div
+          style={{
+            maxWidth: 720,
+            margin: '0 auto',
+            padding: '120px 24px',
+            textAlign: 'center',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 11,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: 'var(--text-muted)',
+          }}
+        >
+          Chargement du produit…
+        </div>
+      )
+    }
     return (
       <div
         style={{

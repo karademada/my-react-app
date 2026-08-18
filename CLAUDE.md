@@ -1,6 +1,6 @@
-# my-react-app
+# placekabar — Frontend
 
-Redux Shop demo — Clean Architecture e-commerce app.
+Boutique e-commerce « récolte éthique tracée de Madagascar » — React 19 SPA avec clean architecture (domain / slice / selectors), design atomique et paiement Stripe Checkout via un backend Strapi. Backend : `../strapi-backend`.
 
 ## Stack
 
@@ -8,7 +8,7 @@ Redux Shop demo — Clean Architecture e-commerce app.
 - Vite (rolldown-vite override) + TypeScript 5.7
 - Redux Toolkit 2 + react-redux 9
 - Chakra UI v3 + Emotion
-- Framer Motion + GSAP
+- GSAP
 - Vitest 4 + Playwright + Storybook 10
 - pnpm
 

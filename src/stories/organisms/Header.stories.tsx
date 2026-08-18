@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { MemoryRouter } from 'react-router-dom'
 import { Header } from '../../components/organisms/Header'
 import { ShoppingCart } from '../../components/organisms/ShoppingCart'
 import type { CartItem } from '../../types'
@@ -7,6 +8,14 @@ import type { CartItem } from '../../types'
 const meta: Meta<typeof Header> = {
   title: 'Organisms/Header',
   component: Header,
+  // The Header renders react-router <Link>s — stories need a router context.
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 }
 
 export default meta

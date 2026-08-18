@@ -1,201 +1,96 @@
-# Redux Shop - Clean Architecture E-commerce App
+# place·kabar — Frontend
 
-A modern e-commerce application demonstrating clean architecture principles, atomic design patterns, and comprehensive testing strategies for frontend development.
+Boutique e-commerce « récolte éthique tracée de Madagascar » — React 19 SPA
+avec clean architecture (domain / slice / selectors), design atomique et
+paiement Stripe Checkout via un backend Strapi.
 
-## 🎯 Project Intention
+## Stack
 
-This project showcases professional frontend development practices:
-- **Clean Architecture**: Separation of concerns with domain logic isolated in Redux store
-- **Atomic Design**: Component hierarchy from atoms to organisms for maximum reusability
-- **Test-Driven Development**: Comprehensive test coverage for business logic and UI components
-- **Modern Animations**: Smooth GSAP animations and parallax effects
-- **Type-Safe State Management**: Redux Toolkit with proper domain modeling
+- **React 19.2** + React Compiler (`babel-plugin-react-compiler`)
+- **Vite** (rolldown-vite 7.2.2) + TypeScript 5.7
+- **Redux Toolkit 2** (slices + RTK Query) + react-redux 9
+- **Chakra UI v3** (tokens + skeletons) + design tokens CSS maison
+  (`src/theme/placekabar-tokens.css`)
+- **GSAP** (animations header / grille produits)
+- **Vitest 4** (unit + Storybook en browser Playwright) + Storybook 10
+- Déploiement : **Vercel** (SPA + fonctions serverless `api/` pour le bot Slack ops)
 
-## 🏗️ Architecture
-
-### Clean Architecture - Domain Logic
-
-All business logic is isolated in the `src/features` directory:
-
-```
-src/features/
-├── cart/
-│   ├── cartDomain.js      # Pure business functions
-│   ├── cartSlice.js       # Redux state management
-│   ├── cartSelectors.js   # State selectors
-│   └── Cart.jsx           # Feature component
-├── products/
-│   ├── productsDomain.js  # Product business logic
-│   ├── productsSlice.js   # Product state
-│   └── productsSelectors.js
-└── user/
-    ├── userDomain.js      # User business logic
-    ├── userSlice.js       # User state
-    └── userSelectors.js
-```
-
-**Key Principles:**
-- Domain logic is pure functions (no side effects)
-- Redux slices handle state management
-- Selectors provide computed state
-- Feature components connect UI to store
-
-### Atomic Design - UI Architecture
-
-Components follow atomic design methodology:
-
-```
-src/components/
-├── atoms/           # Basic building blocks
-│   └── Button.jsx
-├── molecules/       # Simple component groups
-│   ├── CartItem.jsx
-│   └── ProductCard.jsx
-└── organisms/       # Complex components
-    ├── Header.jsx
-    ├── Footer.jsx
-    ├── ProductList.jsx
-    ├── ProductDetail.jsx
-    └── ShoppingCart.jsx
-```
-
-**Benefits:**
-- Maximum reusability
-- Easy to test in isolation
-- Clear component hierarchy
-- Storybook integration
-
-## 🧪 Testing Strategy
-
-### Domain Logic Tests (94 tests passing)
+## Commandes
 
 ```bash
-pnpm test
-```
-
-**Coverage:**
-- `cartDomain.test.js` - Cart business logic (23 tests)
-  - Item management with size/color variants
-  - Quantity updates
-  - Total calculations
-  - Discount application
-- `productsDomain.test.js` - Product filtering (12 tests)
-- `userDomain.test.js` - Authentication logic (17 tests)
-- Redux slice tests - State management (19 tests)
-- Selector tests - Computed state (13 tests)
-
-**Test Philosophy:**
-- Pure functions are easy to test
-- No mocking required for domain logic
-- Fast execution (< 1 second)
-- High confidence in business rules
-
-### UI Component Tests (Storybook)
-
-```bash
-pnpm storybook
-```
-
-**Storybook Stories:**
-- Atoms: Button variations
-- Molecules: CartItem, ProductCard states
-- Organisms: Header, ProductList, ProductDetail, ShoppingCart
-
-**Interactive Testing:**
-- Visual regression testing
-- Component state variations
-- Accessibility testing with a11y addon
-- Responsive design validation
-
-## 🎨 Features
-
-### E-commerce Functionality
-- Product browsing with filtering and search
-- Product detail pages with size/color selection
-- Shopping cart with variant support
-- User authentication
-- Loyalty points system
-
-### Technical Features
-- **Routing**: React Router with smooth transitions
-- **Animations**: GSAP for page transitions and parallax effects
-- **State Management**: Redux Toolkit with domain-driven design
-- **UI Library**: Chakra UI v3
-- **Build Tool**: Vite with React Compiler
-
-## 🚀 Getting Started
-
-```bash
-# Install dependencies
 pnpm install
-
-# Development server
-pnpm dev
-
-# Run tests
-pnpm test
-
-# Test with UI
-pnpm test:ui
-
-# Test coverage
-pnpm test:coverage
-
-# Storybook
-pnpm storybook
-
-# Build for production
-pnpm build
+pnpm dev              # dev server (port 5173)
+pnpm build            # tsc -b && vite build
+pnpm typecheck        # tsc --noEmit
+pnpm lint             # ESLint flat config
+pnpm test             # Vitest watch
+pnpm test:coverage    # unit + stories, coverage v8
+pnpm storybook        # Storybook (port 6006)
 ```
 
-## 📁 Project Structure
+Premier lancement des tests browser : `pnpm playwright:install` (installe
+Chromium dans `.playwright-browsers/`, dossier ignoré par git).
+
+## Architecture
 
 ```
-my-react-app/
-├── src/
-│   ├── components/        # Atomic design components
-│   ├── features/          # Domain logic & Redux
-│   ├── store/             # Redux store configuration
-│   ├── stories/           # Storybook stories
-│   ├── utils/             # Utilities (transitions, etc.)
-│   └── __tests__/         # Test files
-├── .storybook/            # Storybook configuration
-└── package.json
+src/
+├── features/<domain>/   # clean architecture par domaine
+│   ├── *Domain.ts       #   fonctions pures (business logic, zéro React/IO)
+│   ├── *Slice.ts        #   reducers Redux Toolkit (délèguent au domain)
+│   ├── *Selectors.ts    #   sélecteurs mémoïsés
+│   └── *Page.tsx        #   pages / connecteurs UI ↔ store
+├── components/
+│   ├── atoms/           # primitives (Button)
+│   ├── molecules/       # compositions simples (ProductCard, CartItem)
+│   └── organisms/       # sections de page (Header, ShoppingCart, CartPage)
+├── api/                 # RTK Query (apiSlice) + mappers Strapi (strapi.ts)
+├── store/               # configuration du store + hooks typés
+├── theme/               # tokens Chakra + CSS design system placekabar
+├── stories/             # stories Storybook par composant
+└── __tests__/           # tests store/features
 ```
 
-## 🎯 Key Learnings
+Règles de base (détaillées dans `CLAUDE.md` et `.claude/rules/`) :
 
-1. **Separation of Concerns**: Domain logic separate from UI improves testability
-2. **Atomic Design**: Component reusability scales with project size
-3. **Pure Functions**: Easy to test, reason about, and maintain
-4. **Redux Toolkit**: Reduces boilerplate while maintaining type safety
-5. **Storybook**: Component development in isolation improves quality
+- La business logic vit dans `*Domain.ts` (fonctions pures) — jamais dans les
+  composants ou les slices.
+- Les selectors calculent l'état dérivé ; les composants ne calculent rien.
+- Chaque item du panier est identifié par un `cartKey` (id + taille + couleur)
+  — suppression / mise à jour de quantité **par variante**, jamais par id seul.
+- Pas de `useMemo`/`useCallback` manuel (React Compiler s'en charge).
 
-## 🛠️ Tech Stack
+## Flux principal
 
-- **React 19.2.0** - UI library
-- **Redux Toolkit** - State management
-- **React Router** - Navigation
-- **Chakra UI v3** - Component library
-- **GSAP** - Animations
-- **Vitest** - Testing framework
-- **Storybook** - Component development
-- **Vite** - Build tool
+1. `GET /api/products?populate=*` (RTK Query) → catalogue filtré par
+   catégorie / prix / recherche (selectors memoïsés).
+2. Ajout au panier avec variantes taille/couleur → `cartKey` unique par variante.
+3. Checkout : `POST /api/orders/checkout-session` (JWT requis) → redirection
+   Stripe Checkout → webhook `POST /api/orders/stripe-webhook` (signature
+   vérifiée) → statut `paid` + décrément du stock.
+4. Auth : `auth/local` + `auth/local/register` Strapi ; JWT en localStorage
+   (`pk_auth_jwt`), session restaurée au boot via `/api/users/me`.
 
-## 📊 Test Coverage
+## Variables d'environnement
 
-- **Domain Logic**: 94 tests, 100% coverage
-- **UI Components**: Full Storybook coverage
-- **Integration**: Feature components tested via Storybook
+| Variable            | Rôle                                      |
+|---------------------|-------------------------------------------|
+| `VITE_STRAPI_URL`   | URL du backend Strapi (défaut `http://localhost:1337`) |
 
-## 🎓 Best Practices Demonstrated
+Voir `.env.example`. Le backend exige en plus `STRIPE_SECRET_KEY`,
+`STRIPE_WEBHOOK_SECRET`, `CLIENT_URL` (voir `../strapi-backend/.env.example`).
 
-✅ Clean architecture with domain-driven design  
-✅ Atomic design pattern for UI components  
-✅ Comprehensive test coverage  
-✅ Pure functions for business logic  
-✅ Proper state management with Redux  
-✅ Component isolation with Storybook  
-✅ Smooth animations and UX  
-✅ Responsive design  
-✅ Accessibility considerations
+## Performances
+
+Audit complet dans `.perf-audit/report.md` (racine du repo). Mesures clés
+après correctifs (prod build) : LCP cold ≈ 516 ms, CLS warm = 0.
+Le bundle est éclaté par vendors (react / redux / chakra / anim) et les
+routes sont chargées paresseusement avec skeletons.
+
+## Tests
+
+- **Unit (Vitest)** : domain, slices, selectors — `src/__tests__/` +
+  tests colocalisés.
+- **Stories** : chaque composant a sa story ; elles servent aussi de tests
+  browser via `@storybook/addon-vitest`.
+- Couverture : `pnpm test:coverage` (cible : `src/features/**/*.ts`).

@@ -56,6 +56,10 @@ export default defineConfig({
         ],
         test: {
           name: 'storybook',
+          // Retry once: the very first browser navigation can race the
+          // storybook deps server cold start ("Failed to fetch dynamically
+          // imported module"). Retrying makes the run deterministic in CI.
+          retry: 1,
           browser: {
             enabled: true,
             headless: true,

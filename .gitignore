@@ -31,3 +31,14 @@ storybook-static
 
 files.zip
 files/
+
+.vercel
+
+# Playwright browsers cache (workspace-local)
+.playwright-browsers
+
+# Local env
+.env
+
+# Generated test coverage
+coverage
