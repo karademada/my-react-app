@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import gsap from 'gsap'
@@ -58,6 +58,7 @@ export const Header = ({
   onCategoryChange,
   cartContent,
 }: HeaderProps) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const cartRef = useRef<HTMLDivElement>(null)
   const backdropRef = useRef<HTMLDivElement>(null)
 
@@ -74,8 +75,9 @@ export const Header = ({
       tweens.push(
         gsap.fromTo(
           cart,
-          { x: 400, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.24, ease: 'power2.out' },
+          // xPercent (et non x) : largeur du drawer fluide (min(400px, 100vw))
+          { xPercent: 100, opacity: 0 },
+          { xPercent: 0, opacity: 1, duration: 0.24, ease: 'power2.out' },
         ),
       )
     }
@@ -87,6 +89,73 @@ export const Header = ({
 
     return () => tweens.forEach((tween) => tween.kill())
   }, [isCartOpen])
+
+  const closeMenu = () => setIsMenuOpen(false)
+
+  const handleSelectCategory = (category: string | null) => {
+    onCategoryChange(category)
+    closeMenu()
+  }
+
+  /** Barre de catégories : partagée entre la nav desktop (<1024 scroll)
+   *  et le drawer mobile du burger. */
+  const renderCategoryNav = (className: string) => (
+    <div
+      className={className}
+      style={{
+        fontFamily: 'var(--font-mono)',
+        fontSize: 11,
+        letterSpacing: '0.14em',
+        textTransform: 'uppercase',
+      }}
+    >
+      <span
+        onClick={() => handleSelectCategory(null)}
+        style={{
+          cursor: 'pointer',
+          color: selectedCategory === null ? 'var(--ink-900)' : 'var(--text-muted)',
+          fontWeight: selectedCategory === null ? 600 : 500,
+          borderBottom: selectedCategory === null ? '2px solid var(--moss-600)' : '2px solid transparent',
+          paddingBottom: 2,
+        }}
+      >
+        Toute la collection
+      </span>
+      {categories.map((cat) => (
+        <span
+          key={cat}
+          onClick={() => handleSelectCategory(cat)}
+          style={{
+            cursor: 'pointer',
+            color: selectedCategory === cat ? 'var(--ink-900)' : 'var(--text-muted)',
+            fontWeight: selectedCategory === cat ? 600 : 500,
+            borderBottom: selectedCategory === cat ? '2px solid var(--moss-600)' : '2px solid transparent',
+            paddingBottom: 2,
+          }}
+        >
+          {cat}
+        </span>
+      ))}
+      {/* Lien de route, pas un filtre : repoussé à droite pour ne pas se
+          lire comme une catégorie de plus. <a> comme les autres liens de
+          ce Header, qui ne connaît pas le router. */}
+      <a
+        href="/partners"
+        onClick={closeMenu}
+        style={{
+          marginLeft: 'auto',
+          color: 'var(--text-muted)',
+          fontWeight: 500,
+          textDecoration: 'none',
+          borderBottom: '2px solid transparent',
+          paddingBottom: 2,
+        }}
+      >
+        Partenaires
+      </a>
+    </div>
+  )
+
 
   return (
     <>
@@ -104,19 +173,35 @@ export const Header = ({
         </div>
 
         <div
+          className="pk-header-utility"
           style={{
-            display: 'flex',
-            alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 24,
-            padding: '18px 32px',
-            maxWidth: 1280,
-            margin: '0 auto',
           }}
         >
-          <Wordmark />
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="pk-header-burger"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '8px',
+              zIndex: 100,
+            }}
+            aria-label="Menu"
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: 24 }}>
+              <div style={{ height: 2, background: 'var(--ink-900)', width: '100%' }} />
+              <div style={{ height: 2, background: 'var(--ink-900)', width: '100%' }} />
+              <div style={{ height: 2, background: 'var(--ink-900)', width: '100%' }} />
+            </div>
+          </button>
 
-          <div style={{ display: 'flex', flex: 1, maxWidth: 540, gap: 0, alignItems: 'center' }}>
+          <div className="pk-header-logo-container">
+            <Wordmark />
+          </div>
+
+          <div className="pk-header-search" style={{ gap: 0, alignItems: 'center' }}>
             <input
               placeholder="Rechercher un produit…"
               value={searchQuery}
@@ -145,98 +230,110 @@ export const Header = ({
                 borderRadius: '0 var(--radius-md) var(--radius-md) 0',
                 padding: '10px 18px',
                 cursor: 'pointer',
+                whiteSpace: 'nowrap',
               }}
             >
               Chercher
             </button>
           </div>
 
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            {isAuthenticated && user ? (
-              <div style={{ textAlign: 'right', display: 'grid', gap: 2 }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Bonjour</div>
-                <button onClick={onLogout} style={{ background: 'none', border: 'none', padding: 0, fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--ink-900)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>
-                  {user.email?.split('@')[0] ?? ''} · Déconnexion
-                </button>
-                <Link to="/espace-partenaire" style={{ fontFamily: 'var(--font-sans)', fontSize: 12.5, color: 'var(--moss-600)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
-                  Espace partenaire
-                </Link>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <Link
-                  to="/register"
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: 13,
-                    color: 'var(--ink-900)',
-                    textDecoration: 'underline',
-                    textUnderlineOffset: 3,
-                  }}
-                >
-                  Inscription
-                </Link>
-                <Link
-                  to="/login"
-                  onClick={onLogin}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: 34,
-                    padding: '8px 14px',
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    letterSpacing: '-0.005em',
-                    color: 'var(--paper-0)',
-                    background: 'var(--ink-900)',
-                    border: '1.5px solid var(--ink-900)',
-                    borderRadius: 'var(--radius-md)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Connexion
-                </Link>
-              </div>
-            )}
+          <div className={`pk-header-actions ${isMenuOpen ? 'open' : ''}`}>
+            <div className="pk-header-menu-nav">{renderCategoryNav('pk-catnav pk-catnav-mobile')}</div>
 
-            <button
-              onClick={onCartToggle}
-              style={{
-                position: 'relative',
-                background: 'transparent',
-                border: '1px solid var(--line)',
-                borderRadius: 'var(--radius-md)',
-                padding: '8px 14px',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-sans)',
-                fontSize: 13,
-                fontWeight: 600,
-                color: 'var(--ink-900)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              Panier
-              {cartItemCount > 0 && (
-                <span
-                  style={{
-                    background: 'var(--ink-900)',
-                    color: 'var(--paper-0)',
-                    borderRadius: 'var(--radius-pill)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    fontWeight: 600,
-                    padding: '2px 8px',
-                  }}
-                >
-                  {cartItemCount}
+            <div className="pk-header-menu-account">
+              {isAuthenticated && user ? (
+                <div style={{ display: 'grid', gap: 6 }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Bonjour</div>
+                  <button onClick={onLogout} style={{ background: 'none', border: 'none', padding: 0, fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--ink-900)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+                    {user.email?.split('@')[0] ?? ''} · Déconnexion
+                  </button>
+                  <Link to="/espace-partenaire" onClick={closeMenu} style={{ fontFamily: 'var(--font-sans)', fontSize: 12.5, color: 'var(--moss-600)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+                    Espace partenaire
+                  </Link>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+                  <Link
+                    to="/register"
+                    style={{
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: 13,
+                      color: 'var(--ink-900)',
+                      textDecoration: 'underline',
+                      textUnderlineOffset: 3,
+                    }}
+                  >
+                    Inscription
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={onLogin}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minHeight: 40,
+                      padding: '10px 18px',
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      letterSpacing: '-0.005em',
+                      color: 'var(--paper-0)',
+                      background: 'var(--ink-900)',
+                      border: '1.5px solid var(--ink-900)',
+                      borderRadius: 'var(--radius-md)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Connexion
+                  </Link>
+                </div>
+              )}
+
+              {isAuthenticated && (
+                <span className="pk-catnav-fidelity" style={{ color: 'var(--moss-700)', marginTop: 16 }}>
+                  Fidélité · {loyaltyPoints} pts
                 </span>
               )}
-            </button>
+            </div>
           </div>
+
+          <button
+            className="pk-header-cart"
+            onClick={onCartToggle}
+            style={{
+              position: 'relative',
+              background: 'transparent',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--radius-md)',
+              padding: '8px 14px',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-sans)',
+              fontSize: 13,
+              fontWeight: 600,
+              color: 'var(--ink-900)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            Panier
+            {cartItemCount > 0 && (
+              <span
+                style={{
+                  background: 'var(--ink-900)',
+                  color: 'var(--paper-0)',
+                  borderRadius: 'var(--radius-pill)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  padding: '2px 8px',
+                }}
+              >
+                {cartItemCount}
+              </span>
+            )}
+          </button>
         </div>
 
         <nav
@@ -245,69 +342,7 @@ export const Header = ({
             background: 'var(--paper-100)',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              gap: 28,
-              padding: '10px 32px',
-              maxWidth: 1280,
-              margin: '0 auto',
-              alignItems: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span
-              onClick={() => onCategoryChange(null)}
-              style={{
-                cursor: 'pointer',
-                color: selectedCategory === null ? 'var(--ink-900)' : 'var(--text-muted)',
-                fontWeight: selectedCategory === null ? 600 : 500,
-                borderBottom: selectedCategory === null ? '2px solid var(--moss-600)' : '2px solid transparent',
-                paddingBottom: 2,
-              }}
-            >
-              Toute la collection
-            </span>
-            {categories.map((cat) => (
-              <span
-                key={cat}
-                onClick={() => onCategoryChange(cat)}
-                style={{
-                  cursor: 'pointer',
-                  color: selectedCategory === cat ? 'var(--ink-900)' : 'var(--text-muted)',
-                  fontWeight: selectedCategory === cat ? 600 : 500,
-                  borderBottom: selectedCategory === cat ? '2px solid var(--moss-600)' : '2px solid transparent',
-                  paddingBottom: 2,
-                }}
-              >
-                {cat}
-              </span>
-            ))}
-            {/* Lien de route, pas un filtre : repoussé à droite pour ne pas se
-                lire comme une catégorie de plus. <a> comme les autres liens de
-                ce Header, qui ne connaît pas le router. */}
-            <a
-              href="/partners"
-              style={{
-                marginLeft: 'auto',
-                color: 'var(--text-muted)',
-                fontWeight: 500,
-                textDecoration: 'none',
-                borderBottom: '2px solid transparent',
-                paddingBottom: 2,
-              }}
-            >
-              Partenaires
-            </a>
-            {isAuthenticated && (
-              <span style={{ color: 'var(--moss-700)' }}>
-                Fidélité · {loyaltyPoints} pts
-              </span>
-            )}
-          </div>
+          {renderCategoryNav('pk-catnav')}
         </nav>
       </header>
 
@@ -318,7 +353,7 @@ export const Header = ({
             position: 'fixed',
             top: 0,
             right: 0,
-            width: 400,
+            width: 'min(400px, 100vw)',
             height: '100vh',
             background: 'var(--bg-surface)',
             boxShadow: 'var(--shadow-lg)',
@@ -336,6 +371,12 @@ export const Header = ({
           </div>
           <div style={{ padding: 16 }}>{cartContent}</div>
         </div>
+      )}
+      {isMenuOpen && (
+        <div
+          className="pk-header-menu-backdrop"
+          onClick={() => setIsMenuOpen(false)}
+        />
       )}
       {isCartOpen && (
         <div

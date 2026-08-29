@@ -16,7 +16,7 @@ import { logout } from './userSlice'
 import { Header } from '../../components/organisms/Header'
 import Cart from '../cart/Cart'
 
-const CATALOG_PATH = '/'
+const CATALOG_PATH = '/shop'
 
 export default function UserAuth() {
   const [isCartOpen, setIsCartOpen] = useState(false)

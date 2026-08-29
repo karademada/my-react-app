@@ -33,7 +33,7 @@ export const ProductList = ({
   }, [products])
 
   return (
-    <section style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 32px 24px' }}>
+    <section style={{ maxWidth: 1280, margin: '0 auto', padding: '48px var(--gutter-page) 24px' }}>
       <div style={{ marginBottom: 28, display: 'flex', flexDirection: 'column', gap: 8 }}>
         <span
           style={{

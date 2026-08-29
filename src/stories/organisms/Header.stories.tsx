@@ -88,3 +88,47 @@ export const LoggedInWithCart: Story = {
     )
   },
 }
+
+// Régression visuelle responsive : rangée utilitaire avec recherche wrappée,
+// catnav défilable, extras de compte masqués — tout doit tenir à 375px.
+export const Mobile375: Story = {
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+  render: () => {
+    const [isOpen, setIsOpen] = useState(false)
+    const [search, setSearch] = useState('')
+    const [category, setCategory] = useState<string | null>(null)
+    return (
+      <Header
+        isAuthenticated={true}
+        user={{ email: 'user@example.com', token: 'token123' }}
+        loyaltyPoints={150}
+        cartItemCount={3}
+        isCartOpen={isOpen}
+        searchQuery={search}
+        selectedCategory={category}
+        categories={['vanille', 'huiles-essentielles', 'miel', 'apparel', 'épices']}
+        onLogin={() => console.log('Login')}
+        onLogout={() => console.log('Logout')}
+        onCartToggle={() => setIsOpen(!isOpen)}
+        onSearchChange={setSearch}
+        onCategoryChange={setCategory}
+        cartContent={
+          <ShoppingCart
+            items={mockItems}
+            total={2500}
+            discount={10}
+            finalTotal={2250}
+            onUpdateQuantity={(id, qty) => console.log('Update:', id, qty)}
+            onRemove={(id) => console.log('Remove:', id)}
+            onApplyDiscount={(d) => console.log('Discount:', d)}
+            onClearCart={() => console.log('Clear')}
+          />
+        }
+      />
+    )
+  },
+}

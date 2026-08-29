@@ -93,7 +93,7 @@ export default function ProductDetailPage() {
           Ce produit n'existe pas ou n'est plus disponible.
         </p>
         <Link
-          to="/"
+          to="/shop"
           style={{
             fontFamily: 'var(--font-sans)',
             fontSize: 16,
@@ -110,7 +110,7 @@ export default function ProductDetailPage() {
 
   return (
     <div>
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 32px 0' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px var(--gutter-page) 0' }}>
         <button
           onClick={() => navigate('/')}
           style={{

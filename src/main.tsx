@@ -5,6 +5,7 @@ import { store } from './store'
 import App from './App'
 import { system } from './theme/placekabar-theme'
 import './theme/placekabar-tokens.css'
+import './theme/placekabar-responsive.css'
 import './index.css'
 
 const container = document.getElementById('root')

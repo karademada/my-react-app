@@ -34,13 +34,11 @@ export const ProductDetail = ({ product, onAddToCart, onBuyNow }: ProductDetailP
 
   return (
     <div
+      className="pk-pdp-grid"
       style={{
         maxWidth: 1280,
         margin: '0 auto',
-        padding: '40px 32px 96px',
-        display: 'grid',
-        gridTemplateColumns: '1.1fr 1fr',
-        gap: 72,
+        padding: '40px var(--gutter-page) 96px',
       }}
     >
       <div

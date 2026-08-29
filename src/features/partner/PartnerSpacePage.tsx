@@ -114,7 +114,7 @@ export default function PartnerSpacePage() {
     <div style={{ maxWidth: 1040, margin: '0 auto', padding: '48px 24px 80px' }}>
       <header style={{ marginBottom: 8 }}>
         <span style={{ ...sectionTitle, margin: '0 0 8px' }}>Espace partenaire</span>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 40, fontWeight: 600, letterSpacing: '-0.03em', margin: 0 }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-display-md)', fontWeight: 600, letterSpacing: '-0.03em', margin: 0 }}>
           {partner.name}
         </h1>
         <p style={{ color: 'var(--text-muted)', margin: '6px 0 0' }}>

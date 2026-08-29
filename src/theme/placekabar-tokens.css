@@ -136,11 +136,13 @@
   --fw-semibold:  600; /* @kind font */
   --fw-bold:      700; /* @kind font */
 
-  /* --- Display scale (grotesque) — large, tight headlines --- */
-  --text-display-xl: 80px;  /* hero, short line                   */
-  --text-display-lg: 56px;
-  --text-display-md: 40px;
-  --text-display-sm: 30px;
+  /* --- Display scale (grotesque) — large, tight headlines ---
+     Clamped so headings stay fluid from mobile up; desktop
+     rendering unchanged (upper bounds = legacy fixed values). */
+  --text-display-xl: clamp(44px, 8.5vw, 80px);  /* hero, short line */
+  --text-display-lg: clamp(32px, 6.4vw, 56px);
+  --text-display-md: clamp(27px, 4.6vw, 40px);
+  --text-display-sm: clamp(23px, 3.4vw, 30px);
 
   /* --- UI / body scale (sans) ------------------------------ */
   --text-2xl: 28px;

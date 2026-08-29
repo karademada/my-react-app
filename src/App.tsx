@@ -1,5 +1,8 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+// Landing (Three.js) chargée paresseusement : le gros chunk WebGL ne se
+// télécharge que sur `/`, pas sur toute l'app.
+const LandingPage = lazy(() => import('./features/landing/LandingPage'))
 import ProductList from './features/products/ProductList'
 import ProductDetailPage from './features/products/ProductDetailPage'
 import PartnersPage from './features/partners/PartnersPage'
@@ -32,7 +35,21 @@ function App() {
         <UserAuth />
         <main style={{ flex: 1 }}>
           <Routes>
-            <Route path="/" element={<ProductList />} />
+            <Route
+              path="/"
+              element={
+                <Suspense
+                  fallback={
+                    <div style={{ padding: '20vh 24px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-sans)' }}>
+                      Chargement…
+                    </div>
+                  }
+                >
+                  <LandingPage />
+                </Suspense>
+              }
+            />
+            <Route path="/shop" element={<ProductList />} />
             <Route path="/product/:id" element={<ProductDetailPage />} />
             <Route path="/partners" element={<PartnersPage />} />
             <Route path="/partners/:slug" element={<PartnerDetailPage />} />

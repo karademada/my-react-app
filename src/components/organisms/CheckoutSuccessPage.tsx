@@ -24,7 +24,7 @@ export const CheckoutSuccessPage = () => {
         Votre paiement a bien été confirmé. Vous recevrez un e-mail de confirmation dans quelques instants.
       </p>
       <Link
-        to="/"
+        to="/shop"
         style={{ fontFamily: 'var(--font-sans)', fontSize: 16, color: 'var(--joy-600)', textDecoration: 'underline', textUnderlineOffset: 4 }}
       >
         Retour à la boutique

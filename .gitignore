@@ -42,3 +42,6 @@ files/
 
 # Generated test coverage
 coverage
+
+# Scratch / one-off local scripts
+pk-mobile-check.cjs

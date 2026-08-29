@@ -71,22 +71,19 @@ export const Footer = () => {
       }}
     >
       <div
+        className="pk-footer-grid"
         style={{
           maxWidth: 1280,
           margin: '0 auto',
-          padding: '64px 32px 24px',
-          display: 'grid',
-          gridTemplateColumns: '1.5fr repeat(4, 1fr)',
-          gap: 48,
-          alignItems: 'start',
+          padding: '64px var(--gutter-page) 24px',
         }}
       >
-        <div>
+        <div className="pk-footer-brand">
           <div
             style={{
               fontFamily: 'var(--font-display)',
               fontWeight: 700,
-              fontSize: 26,
+              fontSize: 'clamp(20px, 2.4vw, 26px)',
               letterSpacing: '-0.02em',
               color: 'var(--paper-0)',
               lineHeight: 1,
@@ -95,13 +92,13 @@ export const Footer = () => {
             }}
           >
             place
-            <span style={{ color: 'var(--moss-400)', padding: '0 1px' }}>·</span>
+            <span style={{ color: 'var(--moss-200)', padding: '0 1px' }}>·</span>
             kabar
           </div>
           <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--paper-300)', marginTop: 16, maxWidth: 280 }}>
             La place du commerce juste — produits bio tracés de Madagascar et apparel durable, sans intermédiaire.
           </p>
-          <div style={{ marginTop: 18, fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--moss-400)' }}>
+          <div style={{ marginTop: 18, fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--moss-200)' }}>
             Récolte 2025 · Madagascar
           </div>
         </div>
@@ -114,7 +111,7 @@ export const Footer = () => {
                 fontSize: 10.5,
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: 'var(--paper-400)',
+                color: 'var(--paper-300)',
                 marginBottom: 16,
               }}
             >
@@ -140,7 +137,7 @@ export const Footer = () => {
       <div
         style={{
           borderTop: '1px solid rgba(255,255,255,0.08)',
-          padding: '20px 32px',
+          padding: '20px var(--gutter-page)',
           maxWidth: 1280,
           margin: '0 auto',
           display: 'flex',
@@ -151,7 +148,7 @@ export const Footer = () => {
           fontSize: 11,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
-          color: 'var(--paper-400)',
+          color: 'var(--paper-300)',
         }}
       >
         <span>© {year} place·kabar — Toamasina · Madagascar</span>

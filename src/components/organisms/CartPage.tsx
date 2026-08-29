@@ -42,7 +42,7 @@ export const CartPage = () => {
   if (items.length === 0) {
     return (
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '120px 24px', textAlign: 'center' }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 40, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--ink-900)', margin: '0 0 10px' }}>Votre panier est vide.</h1>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-display-md)', fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--ink-900)', margin: '0 0 10px' }}>Votre panier est vide.</h1>
         <p style={{ fontFamily: 'var(--font-sans)', fontSize: 17, color: 'var(--text-muted)' }}>Explorez notre sélection de produits tracés.</p>
       </div>
     )
@@ -58,8 +58,8 @@ export const CartPage = () => {
           Livraison neutre en carbone et retours gratuits sur toutes les commandes.
         </p>
         <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginTop: 30 }}>
-          <Button colorScheme="ink" size="lg" style={{ minWidth: 240 }} onClick={handleCheckout} disabled={checkingOut}>Paiement express</Button>
-          <Button colorScheme="joy" size="lg" uppercase style={{ minWidth: 240 }} onClick={handleCheckout} disabled={checkingOut}>
+          <Button colorScheme="ink" size="lg" style={{ minWidth: 'min(240px, 100%)' }} onClick={handleCheckout} disabled={checkingOut}>Paiement express</Button>
+          <Button colorScheme="joy" size="lg" uppercase style={{ minWidth: 'min(240px, 100%)' }} onClick={handleCheckout} disabled={checkingOut}>
             {checkingOut ? 'Redirection…' : 'Valider la commande'}
           </Button>
         </div>
@@ -80,23 +80,24 @@ export const CartPage = () => {
 
       <div style={{ borderTop: '1px solid var(--line)' }}>
         {items.map((it) => (
-          <div key={keyOf(it)} style={{ display: 'grid', gridTemplateColumns: '120px 1fr auto auto', gap: 28, alignItems: 'start', padding: '32px 0', borderBottom: '1px solid var(--line)' }}>
-            <div style={{ aspectRatio: '1 / 1', borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: 'var(--paper-200)' }}>
+          <div key={keyOf(it)} className="pk-cart-line" style={{ padding: '32px 0', borderBottom: '1px solid var(--line)' }}>
+            <div className="pk-cart-line-media" style={{ aspectRatio: '1 / 1', borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: 'var(--paper-200)' }}>
               {it.image && <img src={it.image} alt={it.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
             </div>
-            <div style={{ paddingTop: 4 }}>
+            <div className="pk-cart-line-info" style={{ paddingTop: 4 }}>
               {it.category && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>{it.category}</div>}
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--ink-900)', lineHeight: 1.1 }}>{it.name}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(19px, 2vw, 26px)', fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--ink-900)', lineHeight: 1.1 }}>{it.name}</div>
               <div style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--bio)', marginTop: 10 }}>Livraison demain — gratuite</div>
             </div>
             <select
+              className="pk-cart-line-qty"
               value={it.quantity}
               onChange={(e) => dispatch(updateCartQuantity({ cartKey: keyOf(it), quantity: Number(e.target.value) }))}
               style={{ fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 600, color: 'var(--ink-900)', background: 'var(--bg-surface)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '9px 14px', cursor: 'pointer' }}
             >
               {Array.from({ length: 9 }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n}</option>)}
             </select>
-            <div style={{ textAlign: 'right', minWidth: 120 }}>
+            <div className="pk-cart-line-price">
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 19, fontWeight: 600, color: 'var(--ink-900)' }}>{fmt(it.price * it.quantity)}</div>
               <button
                 onClick={() => dispatch(removeFromCart(keyOf(it)))}
@@ -107,7 +108,7 @@ export const CartPage = () => {
         ))}
       </div>
 
-      <div style={{ maxWidth: 380, marginLeft: 'auto', marginTop: 28 }}>
+      <div style={{ maxWidth: 'min(380px, 100%)', marginLeft: 'auto', marginTop: 28 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--text-muted)' }}>
           <span>Sous-total</span><span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-body)' }}>{fmt(subtotal)}</span>
         </div>
