@@ -8,27 +8,33 @@ import { AuthLayout, Field } from './AuthLayout'
 import { inputStyle } from './authStyles'
 
 /**
- * Demande de réinitialisation. La réponse est volontairement neutre —
- * on ne révèle pas si l'e-mail correspond à un compte (OWASP) — et les
- * erreurs de livraison n'informent pas l'utilisateur non plus.
+ * Demande de réinitialisation.
+ * - Succès : message volontairement neutre — on ne révèle pas si l'e-mail
+ *   correspond à un compte (OWASP).
+ * - Échec d'envoi (réseau / SMTP) : erreur claire, SANS révéler non plus
+ *   l'existence d'un compte.
  */
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
-  const [request] = useForgotPasswordMutation()
+  const [sendError, setSendError] = useState<string | null>(null)
+  const [request, { isLoading }] = useForgotPasswordMutation()
 
   const trimmed = email.trim()
   const valid = userDomain.validateEmail(trimmed)
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!valid) return
+    if (!valid || isLoading) return
+    setSendError(null)
     try {
       await request({ email: trimmed }).unwrap()
+      setSent(true)
     } catch {
-      // Livraison SMTP indisponible ou compte absent : même silence côté UI.
+      setSendError(
+        "L'envoi du lien a échoué pour le moment. Réessayez dans quelques instants, ou contactez le support place·kabar.",
+      )
     }
-    setSent(true)
   }
 
   return (
@@ -65,8 +71,25 @@ export default function ForgotPasswordPage() {
               style={inputStyle}
             />
           </Field>
-          <Button type="submit" colorScheme="ink" size="md" fullWidth disabled={!valid}>
-            Envoyer le lien de réinitialisation
+
+          {sendError && (
+            <div
+              role="alert"
+              style={{
+                margin: '0 0 16px',
+                padding: '10px 14px',
+                borderRadius: 'var(--radius-md)',
+                background: '#fbe9e2',
+                color: '#8b3517',
+                fontSize: 13,
+              }}
+            >
+              {sendError}
+            </div>
+          )}
+
+          <Button type="submit" colorScheme="ink" size="md" fullWidth disabled={!valid || isLoading}>
+            {isLoading ? 'Envoi en cours…' : 'Envoyer le lien de réinitialisation'}
           </Button>
         </form>
       )}

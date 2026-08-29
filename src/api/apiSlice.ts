@@ -32,6 +32,9 @@ export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
     baseUrl: `${BASE_URL}/api/`,
+    // Pas de spinner infini : tout appel qui ne répond pas en 15 s échoue
+    // proprement (l'upload partenaire, plus lourd, a son propre délai).
+    timeout: 15000,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as StateWithUser).user.currentUser?.token
       if (token) headers.set('Authorization', `Bearer ${token}`)
@@ -96,6 +99,8 @@ export const api = createApi({
         url: 'partners/me/upload',
         method: 'POST',
         body,
+        // Photos : le délai global de 15 s ne suffit pas toujours.
+        timeout: 60000,
       }),
     }),
     // ── Mot de passe oublié (Strapi users-permissions) ───────────────────
