@@ -98,6 +98,24 @@ export const api = createApi({
         body,
       }),
     }),
+    // ── Mot de passe oublié (Strapi users-permissions) ───────────────────
+    forgotPassword: builder.mutation<{ ok: boolean }, { email: string }>({
+      query: (body) => ({
+        url: 'auth/forgot-password',
+        method: 'POST',
+        body,
+      }),
+    }),
+    resetPassword: builder.mutation<
+      { ok: boolean },
+      { code: string; password: string; passwordConfirmation: string }
+    >({
+      query: (body) => ({
+        url: 'auth/reset-password',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 })
 
@@ -111,4 +129,6 @@ export const {
   useUpdatePartnerMeMutation,
   useUpdatePartnerProductMutation,
   useUploadPartnerAssetMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = api

@@ -11,6 +11,7 @@ import {
 } from './userSelectors'
 import { userDomain } from './userDomain'
 import { Button } from '../../components/atoms/Button'
+import { PasswordField } from '../../components/molecules/PasswordField'
 import { AuthLayout, Field } from './AuthLayout'
 import { inputStyle } from './authStyles'
 
@@ -110,41 +111,27 @@ export default function RegisterPage() {
           />
         </Field>
 
-        <Field
+        <PasswordField
+          id="register-password"
           label="Mot de passe"
-          htmlFor="register-password"
-          error={
-            touched && password.length > 0 && !pwValid ? '8 caractères minimum' : undefined
-          }
-        >
-          <input
-            id="register-password"
-            type="password"
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
-          />
-        </Field>
+          value={password}
+          onChange={setPassword}
+          autoComplete="new-password"
+          error={touched && password.length > 0 && !pwValid ? '8 caractères minimum' : undefined}
+        />
 
-        <Field
+        <PasswordField
+          id="register-confirm"
           label="Confirmer le mot de passe"
-          htmlFor="register-confirm"
+          value={confirm}
+          onChange={setConfirm}
+          autoComplete="new-password"
           error={
             touched && confirm.length > 0 && !confirmValid
               ? 'Les mots de passe diffèrent'
               : undefined
           }
-        >
-          <input
-            id="register-confirm"
-            type="password"
-            autoComplete="new-password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            style={inputStyle}
-          />
-        </Field>
+        />
 
         {serverError && (
           <div

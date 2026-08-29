@@ -8,6 +8,8 @@ import PartnerSpacePage from './features/partner/PartnerSpacePage'
 import UserAuth from './features/user/UserAuth'
 import LoginPage from './features/user/LoginPage'
 import RegisterPage from './features/user/RegisterPage'
+import ForgotPasswordPage from './features/user/ForgotPasswordPage'
+import ResetPasswordPage from './features/user/ResetPasswordPage'
 import ProtectedRoute from './features/user/ProtectedRoute'
 import { Footer } from './components/organisms/Footer'
 import CartPage from './components/organisms/CartPage'
@@ -36,6 +38,8 @@ function App() {
             <Route path="/partners/:slug" element={<PartnerDetailPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route
               path="/cart"
               element={

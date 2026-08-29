@@ -11,6 +11,7 @@ import {
 } from './userSelectors'
 import { userDomain } from './userDomain'
 import { Button } from '../../components/atoms/Button'
+import { PasswordField } from '../../components/molecules/PasswordField'
 import { AuthLayout, Field } from './AuthLayout'
 import { inputStyle } from './authStyles'
 
@@ -87,20 +88,29 @@ export default function LoginPage() {
           />
         </Field>
 
-        <Field
+        <PasswordField
+          id="login-password"
           label="Mot de passe"
-          htmlFor="login-password"
+          value={password}
+          onChange={setPassword}
+          autoComplete="current-password"
           error={touched && !passwordLooksValid ? '8 caractères minimum' : undefined}
-        >
-          <input
-            id="login-password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
-          />
-        </Field>
+        />
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16, marginTop: 16 }}>
+          <Link
+            to="/forgot-password"
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: 13,
+              color: 'var(--ink-900)',
+              textDecoration: 'underline',
+              textUnderlineOffset: 3,
+            }}
+          >
+            Mot de passe oublié ?
+          </Link>
+        </div>
 
         {serverError && (
           <div
