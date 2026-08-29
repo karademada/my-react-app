@@ -53,10 +53,12 @@ export const Button = ({
   const [isPress, setPress] = useState(false)
 
   const variants: Record<Variant, React.CSSProperties> = {
-    solid: { background: base, color: 'var(--paper-0)', border: '1.5px solid ' + base },
-    outline: { background: 'transparent', color: 'var(--ink-900)', border: '1.5px solid var(--ink-900)' },
-    ghost: { background: 'transparent', color: 'var(--ink-900)', border: '1.5px solid transparent' },
-    link: { background: 'transparent', color: base, border: 'none', textDecoration: 'underline', textUnderlineOffset: 4 },
+    // borderWidth/Style/Color séparés : le hover ne change que borderColor,
+    // sans mélanger shorthand et non-shorthand (warning React).
+    solid: { background: base, color: 'var(--paper-0)', borderWidth: 1.5, borderStyle: 'solid', borderColor: base },
+    outline: { background: 'transparent', color: 'var(--ink-900)', borderWidth: 1.5, borderStyle: 'solid', borderColor: 'var(--ink-900)' },
+    ghost: { background: 'transparent', color: 'var(--ink-900)', borderWidth: 1.5, borderStyle: 'solid', borderColor: 'transparent' },
+    link: { background: 'transparent', color: base, borderWidth: 0, borderStyle: 'none', borderColor: 'transparent', textDecoration: 'underline', textUnderlineOffset: 4 },
   }
 
   const hoverCss: React.CSSProperties =

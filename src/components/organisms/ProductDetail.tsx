@@ -21,7 +21,8 @@ export const ProductDetail = ({ product, onAddToCart, onBuyNow }: ProductDetailP
   const [selectedColor, setSelectedColor] = useState<Color | null>(product.colors?.[0] ?? null)
   const [quantity, setQuantity] = useState(1)
   const stock = product.stock ?? 0
-  const soldOut = stock === 0
+  const unavailable = product.available === false
+  const soldOut = stock === 0 || unavailable
 
   const handleAddToCart = () => {
     onAddToCart({ ...product, selectedSize, selectedColor, quantity })
@@ -290,7 +291,7 @@ export const ProductDetail = ({ product, onAddToCart, onBuyNow }: ProductDetailP
             disabled={soldOut}
             onClick={handleAddToCart}
           >
-            {soldOut ? 'Épuisé' : 'Ajouter au panier'}
+            {soldOut ? (unavailable ? 'Momentanément indisponible' : 'Épuisé') : 'Ajouter au panier'}
           </Button>
           <Button colorScheme="joy" size="lg" uppercase disabled={soldOut} onClick={handleBuyNow}>
             Acheter maintenant

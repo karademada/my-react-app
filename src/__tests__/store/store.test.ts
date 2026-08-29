@@ -53,6 +53,7 @@ describe('Redux Store', () => {
           name: 'Vanille Bourbon',
           price: 24.9,
           stock: 10,
+          available: true,
           description: null,
           sizes: null,
           colors: null,

@@ -4,6 +4,7 @@ import ProductList from './features/products/ProductList'
 import ProductDetailPage from './features/products/ProductDetailPage'
 import PartnersPage from './features/partners/PartnersPage'
 import PartnerDetailPage from './features/partners/PartnerDetailPage'
+import PartnerSpacePage from './features/partner/PartnerSpacePage'
 import UserAuth from './features/user/UserAuth'
 import LoginPage from './features/user/LoginPage'
 import RegisterPage from './features/user/RegisterPage'
@@ -40,6 +41,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CartPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/espace-partenaire"
+              element={
+                <ProtectedRoute>
+                  <PartnerSpacePage />
                 </ProtectedRoute>
               }
             />

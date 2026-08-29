@@ -1,5 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { CheckoutItemPayload, Product } from '../types'
+import type {
+  CheckoutItemPayload,
+  PartnerProfilePatch,
+  PartnerProduct,
+  PartnerSpacePayload,
+  Product,
+} from '../types'
 import {
   BASE_URL,
   mapProduct,
@@ -32,7 +38,7 @@ export const api = createApi({
       return headers
     },
   }),
-  tagTypes: ['Products'],
+  tagTypes: ['Products', 'Partner'],
   endpoints: (builder) => ({
     getProducts: builder.query<Product[], void>({
       query: () => 'products?populate=*&pagination[pageSize]=100',
@@ -61,6 +67,37 @@ export const api = createApi({
         body: { items },
       }),
     }),
+    // ── Espace partenaire ────────────────────────────────────────────────
+    getPartnerMe: builder.query<PartnerSpacePayload, void>({
+      query: () => 'partners/me',
+      providesTags: ['Partner'],
+    }),
+    updatePartnerMe: builder.mutation<{ ok: boolean; portrait: string | null }, PartnerProfilePatch>({
+      query: (body) => ({
+        url: 'partners/me',
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Partner'],
+    }),
+    updatePartnerProduct: builder.mutation<
+      { ok: boolean; product: PartnerProduct },
+      { documentId: string; stock?: number; available?: boolean; image?: number; gallery?: number[] }
+    >({
+      query: ({ documentId, ...body }) => ({
+        url: `partners/me/products/${documentId}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Partner', 'Products'],
+    }),
+    uploadPartnerAsset: builder.mutation<{ id: number; url: string; name: string }, FormData>({
+      query: (body) => ({
+        url: 'partners/me/upload',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 })
 
@@ -70,4 +107,8 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useCreateCheckoutSessionMutation,
+  useGetPartnerMeQuery,
+  useUpdatePartnerMeMutation,
+  useUpdatePartnerProductMutation,
+  useUploadPartnerAssetMutation,
 } = api

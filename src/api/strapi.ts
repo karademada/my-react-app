@@ -10,6 +10,7 @@ export type StrapiProduct = {
   name: string
   price: number | string
   stock: number | null
+  available: boolean | null
   description: string | null
   sizes: string[] | null
   colors: Color[] | null
@@ -34,6 +35,7 @@ export function mapProduct(p: StrapiProduct): Product {
     name: p.name,
     price: typeof p.price === 'string' ? Number(p.price) : p.price,
     stock: p.stock ?? undefined,
+    available: p.available ?? true,
     description: p.description ?? undefined,
     sizes: p.sizes ?? undefined,
     colors: p.colors ?? undefined,

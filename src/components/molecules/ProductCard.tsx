@@ -13,7 +13,8 @@ const fmt = (n: number) => '€ ' + Number(n).toFixed(2).replace('.', ',')
 
 export const ProductCard = ({ product, onAddToCart, onProductClick, disabled }: ProductCardProps) => {
   const stock = product.stock ?? 0
-  const soldOut = stock === 0
+  const unavailable = product.available === false
+  const soldOut = stock === 0 || unavailable
   const [hover, setHover] = useState(false)
 
   return (
@@ -47,7 +48,7 @@ export const ProductCard = ({ product, onAddToCart, onProductClick, disabled }: 
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-300)' }}>placekabar</div>
         )}
         {soldOut && (
-          <span style={{ position: 'absolute', top: 12, right: 12, background: 'var(--berry-600)', color: 'var(--paper-0)', fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 'var(--radius-pill)' }}>Épuisé</span>
+          <span style={{ position: 'absolute', top: 12, right: 12, background: 'var(--berry-600)', color: 'var(--paper-0)', fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 'var(--radius-pill)' }}>{unavailable ? 'Indisponible' : 'Épuisé'}</span>
         )}
       </div>
 
@@ -68,7 +69,7 @@ export const ProductCard = ({ product, onAddToCart, onProductClick, disabled }: 
             disabled={disabled || soldOut}
             onClick={() => onAddToCart(product)}
           >
-            {soldOut ? 'Épuisé' : 'Ajouter'}
+            {soldOut ? (unavailable ? 'Indisponible' : 'Épuisé') : 'Ajouter'}
           </Button>
         </div>
       </div>

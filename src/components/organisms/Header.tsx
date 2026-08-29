@@ -153,11 +153,14 @@ export const Header = ({
 
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
             {isAuthenticated && user ? (
-              <div style={{ textAlign: 'right' }}>
+              <div style={{ textAlign: 'right', display: 'grid', gap: 2 }}>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Bonjour</div>
                 <button onClick={onLogout} style={{ background: 'none', border: 'none', padding: 0, fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--ink-900)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>
                   {user.email?.split('@')[0] ?? ''} · Déconnexion
                 </button>
+                <Link to="/espace-partenaire" style={{ fontFamily: 'var(--font-sans)', fontSize: 12.5, color: 'var(--moss-600)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+                  Espace partenaire
+                </Link>
               </div>
             ) : (
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
