@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Product } from '../../types'
 import { Button } from '../atoms/Button'
+import { CarbonBadge } from '../atoms/CarbonBadge'
 
 export interface ProductCardProps {
   product: Product
@@ -72,6 +73,7 @@ export const ProductCard = ({ product, onAddToCart, onProductClick, disabled }: 
             {soldOut ? (unavailable ? 'Indisponible' : 'Épuisé') : 'Ajouter'}
           </Button>
         </div>
+        <CarbonBadge product={product} compact />
       </div>
     </div>
   )

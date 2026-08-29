@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Color, Product } from '../../types'
 import { Button } from '../atoms/Button'
+import { CarbonBadge } from '../atoms/CarbonBadge'
 
 export interface ProductDetailSelection {
   selectedSize: string | null
@@ -309,6 +310,7 @@ export const ProductDetail = ({ product, onAddToCart, onBuyNow }: ProductDetailP
             color: 'var(--text-muted)',
           }}
         >
+          <CarbonBadge product={product} />
           <span>Livraison neutre en carbone — gratuite dès 60 €.</span>
           <span>Sourcé sans intermédiaire · coopératives partenaires de Madagascar.</span>
           <span>Retours gratuits sous 30 jours.</span>

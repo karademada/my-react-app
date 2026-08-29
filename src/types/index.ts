@@ -16,6 +16,10 @@ export interface Product {
   colors?: Color[]
   selectedSize?: string | null
   selectedColor?: Color | null
+  /** Poids net unitaire (g) — base du calcul d'empreinte carbone. */
+  weightGrams?: number
+  /** Coordonnées du lieu de production (partenaire), si connues. */
+  carbonOrigin?: { lat: number; lng: number }
 }
 
 export interface PartnerLocation {

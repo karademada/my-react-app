@@ -44,13 +44,15 @@ export const api = createApi({
   tagTypes: ['Products', 'Partner'],
   endpoints: (builder) => ({
     getProducts: builder.query<Product[], void>({
-      query: () => 'products?populate=*&pagination[pageSize]=100',
+      query: () =>
+        'products?populate[category]=true&populate[partners][populate][location]=true&pagination[pageSize]=100',
       transformResponse: (res: StrapiListResponse<StrapiProduct>) =>
         res.data.map(mapProduct),
       providesTags: ['Products'],
     }),
     getProductById: builder.query<Product | null, number>({
-      query: (id) => `products?populate=*&filters[id][$eq]=${id}`,
+      query: (id) =>
+        `products?populate[category]=true&populate[partners][populate][location]=true&filters[id][$eq]=${id}`,
       transformResponse: (res: StrapiListResponse<StrapiProduct>) => {
         const first = res.data[0]
         return first ? mapProduct(first) : null

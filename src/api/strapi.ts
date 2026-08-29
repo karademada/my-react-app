@@ -4,6 +4,13 @@ export const BASE_URL = import.meta.env.VITE_STRAPI_URL ?? 'http://localhost:133
 
 type StrapiMedia = { url: string } | null
 type StrapiCategory = { name: string; slug: string } | null
+type StrapiPartnerOrigin = {
+  id: number
+  location?:
+    | { latitude?: number | null; longitude?: number | null; town?: string | null; region?: string | null }
+    | null
+} | null
+
 export type StrapiProduct = {
   id: number
   documentId: string
@@ -11,12 +18,14 @@ export type StrapiProduct = {
   price: number | string
   stock: number | null
   available: boolean | null
+  weightGrams: number | null
   description: string | null
   sizes: string[] | null
   colors: Color[] | null
   image: StrapiMedia
   imageUrl: string | null
   category: StrapiCategory
+  partners: StrapiPartnerOrigin[] | null
 }
 export type StrapiListResponse<T> = {
   data: T[]
@@ -30,12 +39,27 @@ function absoluteMediaUrl(url: string | undefined | null): string | undefined {
 }
 
 export function mapProduct(p: StrapiProduct): Product {
+  // Premiere origine connue (partenaire) avec coordonnees => base du calcul carbone.
+  const originPartner =
+    p.partners?.find(
+      (pa) => pa && pa.location && pa.location.latitude != null && pa.location.longitude != null,
+    ) ?? null
+  const origin =
+    originPartner && originPartner.location
+      ? {
+          lat: originPartner.location.latitude!,
+          lng: originPartner.location.longitude!,
+        }
+      : undefined
+
   return {
     id: p.id,
     name: p.name,
     price: typeof p.price === 'string' ? Number(p.price) : p.price,
     stock: p.stock ?? undefined,
     available: p.available ?? true,
+    weightGrams: p.weightGrams ?? 0,
+    carbonOrigin: origin,
     description: p.description ?? undefined,
     sizes: p.sizes ?? undefined,
     colors: p.colors ?? undefined,
